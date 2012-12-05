@@ -27,6 +27,7 @@ package org.societies.android.api.internal.context;
 import java.io.Serializable;
 import java.util.List;
 
+import org.societies.android.api.context.ICtxClient;
 import org.societies.android.api.context.model.ACtxAssociation;
 import org.societies.android.api.context.model.ACtxAttribute;
 import org.societies.android.api.context.model.ACtxAttributeIdentifier;
@@ -49,7 +50,7 @@ import org.societies.api.context.model.CtxModelType;
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
  * @since 0.0.2
  */
-public interface IInternalCtxClient {
+public interface IInternalCtxClient extends ICtxClient {
  
 	//Intents
 	public static final String INTENT_RETURN_VALUE_KEY = "org.societies.android.platform.internalctxclient.ReturnValue";

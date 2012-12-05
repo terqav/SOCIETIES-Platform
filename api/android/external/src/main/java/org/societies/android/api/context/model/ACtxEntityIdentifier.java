@@ -56,7 +56,7 @@ import android.os.Parcelable;
  * @since 0.0.1
  */
 public class ACtxEntityIdentifier extends ACtxIdentifier {
-	
+
 	private static final long serialVersionUID = -7948766616331030324L;
 
 	/**
@@ -74,12 +74,12 @@ public class ACtxEntityIdentifier extends ACtxIdentifier {
 	 */
 	public ACtxEntityIdentifier(String ownerId, String type, 
 			Long objectNumber) {
-		
+
 		super(ownerId, CtxModelType.ENTITY, type, objectNumber);
 	}
-	
+
 	public ACtxEntityIdentifier(String str) throws MalformedCtxIdentifierException {
-		
+
 		super(str);
 	}
 
@@ -150,7 +150,7 @@ public class ACtxEntityIdentifier extends ACtxIdentifier {
 	@Override
 	protected void parseString(String input)
 			throws MalformedCtxIdentifierException {
-	
+
 /*		super.string = input;
 
 		final int length = input.length();
