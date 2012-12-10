@@ -73,16 +73,16 @@ public interface ICtxClient {
 	public static final String UPDATE = "org.societies.android.platform.context.UPDATE";
 	
 	//Array of interface method signatures
-	String methodsArray [] = {"createEntity(String client, final org.societies.android.api.identity.ARequestor requestor, final IIdentity targetCss, final String type)",
+	String methodsArray [] = {"createEntity(String client, final org.societies.android.api.identity.ARequestor requestor, final String targetCss, final String type)",
 			"createAttribute(String client, final org.societies.android.api.identity.ARequestor requestor, final org.societies.android.api.context.model.ACtxEntityIdentifier scope, final String type)",
-			"createAssociation(String client, final org.societies.android.api.identity.ARequestor requestor, final IIdentity targetCss, final String type)",
-			"lookup(String client, final org.societies.android.api.identity.ARequestor requestor, final IIdentity target, final CtxModelType modelType, final String type)",
+			"createAssociation(String client, final org.societies.android.api.identity.ARequestor requestor, final String targetCss, final String type)",
+			"lookup(String client, final org.societies.android.api.identity.ARequestor requestor, final String target, final CtxModelType modelType, final String type)",
 			"lookup(String client, final org.societies.android.api.identity.ARequestor requestor, final org.societies.android.api.context.model.ACtxEntityIdentifier entityId, final CtxModelType modelType, final String type)",
-			"lookupEntities(String client, final org.societies.android.api.identity.ARequestor requestor, final IIdentity targetCss, final String entityType, final String attribType, final Serializable minAttribValue, final Serializable maxAttribValue)",
+			"lookupEntities(String client, final org.societies.android.api.identity.ARequestor requestor, final String targetCss, final String entityType, final String attribType, final Serializable minAttribValue, final Serializable maxAttribValue)",
 			"remove(String client, final org.societies.android.api.identity.ARequestor requestor, final org.societies.android.api.context.model.ACtxIdentifier identifier)",
 			"retrieve(String client, final org.societies.android.api.identity.ARequestor requestor, final org.societies.android.api.context.model.ACtxIdentifier identifier)",
-			"retrieveIndividualEntityId(String client, final org.societies.android.api.identity.ARequestor requestor, final IIdentity cssId)",
-			"retrieveCommunityEntityId(String client, final org.societies.android.api.identity.ARequestor requestor, final IIdentity cisId)",
+			"retrieveIndividualEntityId(String client, final org.societies.android.api.identity.ARequestor requestor, final String cssId)",
+			"retrieveCommunityEntityId(String client, final org.societies.android.api.identity.ARequestor requestor, final String cisId)",
 			"update(String client, final org.societies.android.api.identity.ARequestor requestor, final org.societies.android.api.context.model.ACtxModelObject object)"
 	};
 
@@ -99,7 +99,7 @@ public interface ICtxClient {
 	 * @throws CtxException 
 	 */
 	public ACtxEntity createEntity(String client, final ARequestor requestor, 
-			final IIdentity targetCss, final String type) throws CtxException;
+			final String targetCss, final String type) throws CtxException;
 	
 	/**
 	 * Creates a {@link ACtxAttribute} with the specified type which is associated to
@@ -130,7 +130,7 @@ public interface ICtxClient {
 	 * @throws CtxException 
 	 */
 	public ACtxAssociation createAssociation(String client, final ARequestor requestor, 
-			final IIdentity targetCss, final String type) throws CtxException;
+			final String targetCss, final String type) throws CtxException;
 	
 	/**
 	 * Looks up context model objects of the specified type associated with the
@@ -161,7 +161,7 @@ public interface ICtxClient {
 	 *             if any of the specified parameters is <code>null</code>
 	 */
 	public List<ACtxIdentifier> lookup(String client, final ARequestor requestor,
-			final IIdentity target, final CtxModelType modelType,
+			final String target, final CtxModelType modelType,
 			final String type) throws CtxException;
 	
 	/**
@@ -210,7 +210,7 @@ public interface ICtxClient {
 	 * @throws CtxException 
 	 */
 	public List<ACtxEntityIdentifier> lookupEntities(String client, 
-			final ARequestor requestor, final IIdentity targetCss,
+			final ARequestor requestor, final String targetCss,
 			final String entityType, final String attribType,
 			final Serializable minAttribValue,
 			final Serializable maxAttribValue) throws CtxException;
@@ -275,7 +275,7 @@ public interface ICtxClient {
 	 * @since 0.3
 	 */
 	public ACtxEntityIdentifier retrieveIndividualEntityId(String client, 
-			final ARequestor requestor, final IIdentity cssId) throws CtxException;
+			final ARequestor requestor, final String cssId) throws CtxException;
 	
 	/**
 	 * Retrieves the {@link ACtxEntityIdentifier} of the 
@@ -303,7 +303,7 @@ public interface ICtxClient {
 	 * @since 0.4
 	 */
 	public ACtxEntityIdentifier retrieveCommunityEntityId(String client, 
-			final ARequestor requestor, final IIdentity cisId) throws CtxException;
+			final ARequestor requestor, final String cisId) throws CtxException;
 
 	/**
 	 * Updates the specified {@link ACtxModelObject}. The requestor on whose
