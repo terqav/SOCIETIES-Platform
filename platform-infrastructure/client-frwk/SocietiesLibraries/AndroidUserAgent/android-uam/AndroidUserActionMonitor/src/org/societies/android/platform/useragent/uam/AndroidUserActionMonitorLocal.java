@@ -22,57 +22,52 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.security.policynegotiator.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+package org.societies.android.platform.useragent.uam;
 
-/**
- * @author Miroslav Pavleski, Mitja Vardjan
- */
-public class StreamUtil {
+import org.societies.android.api.useragent.IAndroidUserActionMonitor;
+import org.societies.comm.xmpp.client.impl.ClientCommunicationMgr;
 
-	public static void copyStream(InputStream is, OutputStream os) {
-		try {
-			byte buf[] = new byte[8192];
-			int rd = -1;
+import android.app.Service;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
+import android.util.Log;
 
-			while ((rd = is.read(buf)) != -1)
-				os.write(buf, 0, rd);
-		} catch (Exception e) {
-			throw new RuntimeException("Stream copy failed", e);
-		} finally {
-			closeStream(os);
-			closeStream(is);
-		}
+public class AndroidUserActionMonitorLocal extends Service{
+
+	private static final String LOG_TAG = AndroidUserActionMonitorLocal.class.getName();
+	private IBinder binder;
+
+	@Override
+	public void onCreate () {
+		this.binder = new LocalUAMBinder();
+		Log.d(LOG_TAG, "AndroidUserActionMonitorLocal service starting...");
 	}
 
-	public static void closeStream(InputStream is) {
-		if (is == null)
-			return;
-		try {
-			is.close();
-		} catch (IOException e) {
-		}
+	@Override
+	public void onDestroy(){
+		Log.d(LOG_TAG, "AndroidUserActionMonitorLocal service terminating...");
 	}
 
-	public static void closeStream(OutputStream os) {
-		if (os == null)
-			return;
-		try {
-			os.close();
-		} catch (IOException e) {
+	@Override
+	public IBinder onBind(Intent intent) {
+		Log.d(LOG_TAG, "AndroidUserActionMonitorLocal onBind...");
+		return this.binder;
+	}
+
+	public class LocalUAMBinder extends Binder {
+		public IAndroidUserActionMonitor getService() {
+			ClientCommunicationMgr ccm = createClientCommunicationMgr();
+			AndroidUserActionMonitorBase uamBase = new AndroidUserActionMonitorBase(
+					AndroidUserActionMonitorLocal.this.getApplicationContext(),  
+					ccm, 
+					false);
+			return uamBase;
 		}
 	}
 	
-	public static InputStream str2stream(String str) throws UnsupportedEncodingException {
-		
-		byte[] bytes = str.getBytes("UTF-8");
-		InputStream is = new ByteArrayInputStream(bytes);
-		
-		return is;
+	protected ClientCommunicationMgr createClientCommunicationMgr() {
+		return new ClientCommunicationMgr(getApplicationContext());
 	}
 }
