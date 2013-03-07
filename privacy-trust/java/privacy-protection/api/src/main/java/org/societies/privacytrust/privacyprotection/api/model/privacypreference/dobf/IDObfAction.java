@@ -22,32 +22,19 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+
 
 /**
+ * This interface is used to represent a data obfuscation decision made by the
+ * user and is used by the Privacy PreferenceLearning component.
  * @author Eliza
  * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ * @created 11-Nov-2011 17:06:54
  */
-public interface IPrivacyPreferenceLearningManager {
+public interface IDObfAction {
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
-
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
-	
-	
-	public void mergeDOBFAction(IDObfAction dobfAction);
+	public double getObfuscationLevel();
 
 }

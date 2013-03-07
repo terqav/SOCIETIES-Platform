@@ -22,32 +22,74 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+import org.societies.api.privacytrust.privacy.util.privacypolicy.DecisionUtils;
+import org.societies.api.schema.privacytrust.privacy.model.privacypolicy.Decision;
 
 /**
  * @author Eliza
- * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ *
  */
-public interface IPrivacyPreferenceLearningManager {
+public class AccessControlOutcome {
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
+	private Decision decision;
+	
+	public AccessControlOutcome(Decision decision) {
+		this.setDecision(decision);
+	}
 
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
+
+	public Decision getDecision() {
+		return decision;
+	}
+
+
+	public void setDecision(Decision decision) {
+		this.decision = decision;
+	}
 	
 	
-	public void mergeDOBFAction(IDObfAction dobfAction);
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AccessControlOutcome [decision=");
+		builder.append(DecisionUtils.toXmlString(decision));
+		builder.append("]");
+		return builder.toString();
+	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((decision == null) ? 0 : decision.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AccessControlOutcome other = (AccessControlOutcome) obj;
+		if (!DecisionUtils.equals(decision,other.decision)) {
+			return false;
+		}
+		return true;
+	}
+
+
+
+	
+	
 }

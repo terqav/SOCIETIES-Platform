@@ -22,32 +22,65 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+import java.io.Serializable;
+
+import javax.swing.tree.DefaultTreeModel;
+
+import org.societies.api.context.model.CtxAttributeIdentifier;
+import org.societies.api.context.model.MalformedCtxIdentifierException;
+import org.societies.api.identity.DataIdentifierFactory;
+import org.societies.api.identity.DataIdentifierUtil;
+import org.societies.api.identity.IIdentity;
+import org.societies.api.identity.Requestor;
+import org.societies.api.schema.identity.DataIdentifier;
+import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreferenceTreeModel;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
+
+
 
 /**
+ * This class represents a tree model for Data Obfuscation Preferences and
+ * encapsulates a tree of DObfPreference objects.
  * @author Eliza
  * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ * @created 11-Nov-2011 17:06:54
  */
-public interface IPrivacyPreferenceLearningManager {
+public class DObfPreferenceTreeModel extends DefaultTreeModel implements IPrivacyPreferenceTreeModel, Serializable{
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
+	private final DObfPreferenceDetails details;
+	private IPrivacyPreference pref;
+	
+	public DObfPreferenceTreeModel(DObfPreferenceDetails details, IPrivacyPreference preference){
+		super(preference);
+		this.details = details;
+		this.pref = preference;
+	}
 
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
+
+	@Override
+	public PrivacyPreferenceTypeConstants getPrivacyType() {
+		return PrivacyPreferenceTypeConstants.DATA_OBFUSCATION;
+	}
+
+
+	@Override
+	public IPrivacyPreference getRootPreference() {
+		return this.pref;
+	}
+	
+	public void setRootPreference(IPrivacyPreference pref){
+		this.pref = pref;
+	}
+
+
+	public DObfPreferenceDetails getDetails() {
+		return details;
+	}
 	
 	
-	public void mergeDOBFAction(IDObfAction dobfAction);
-
+	
 }

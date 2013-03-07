@@ -22,32 +22,38 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+import org.societies.api.privacytrust.privacy.model.privacypolicy.Condition;
+import org.societies.api.schema.privacytrust.privacy.model.privacypolicy.ConditionConstants;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyConditionConstants;
 
 /**
  * @author Eliza
- * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ *
  */
-public interface IPrivacyPreferenceLearningManager {
+public class PrivacyCondition implements IPrivacyPreferenceCondition{
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
-
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
+	private final Condition condition;
 	
 	
-	public void mergeDOBFAction(IDObfAction dobfAction);
+	public PrivacyCondition(Condition condition) {
+		this.condition = condition;
+		
+	}
+	
+	
+	
+	@Override
+	public PrivacyConditionConstants getType() {
+		// TODO Auto-generated method stub
+		return PrivacyConditionConstants.PRIVACY;
+	}
+
+
+
+	public Condition getCondition() {
+		return condition;
+	}
 
 }

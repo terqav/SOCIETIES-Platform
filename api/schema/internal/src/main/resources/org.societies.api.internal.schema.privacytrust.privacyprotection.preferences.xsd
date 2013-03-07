@@ -68,7 +68,17 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-
+	
+	<xs:complexType name="PrivacyConditionBean">
+		<xs:complexContent>
+			<xs:extension base="PrivacyPreferenceConditionBean">
+				<xs:sequence>
+					<xs:element name="condition"  type="ns3:condition" 
+					minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 
 	<xs:complexType name="PPNPreferenceBean">
 		<xs:sequence>
@@ -104,16 +114,14 @@
 				minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
+	
+	
+	
 	<xs:complexType name="PPNPrivacyPreferenceTreeModelBean">
 		<xs:sequence>
-			<xs:element name="dataId" type="ns1:dataIdentifier"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="dataType" type="xs:string" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="requestor" type="ns1:requestorBean"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="myOutcomeType" type="PrivacyPreferenceTypeConstantsBean"
-				minOccurs="0" maxOccurs="1" />
+			<xs:element name="details" type="PPNPreferenceDetailsBean"
+				minOccurs="1" maxOccurs="1" />
+
 			<xs:element name="pref" type="PPNPreferenceBean"
 				minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
@@ -122,14 +130,8 @@
 
 	<xs:complexType name="DObfPrivacyPreferenceTreeModelBean">
 		<xs:sequence>
-			<xs:element name="affectedCtxID" type="context:ctxAttributeIdentifierBean"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="ctxType" type="xs:string" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="requestor" type="ns1:requestorBean"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="myOutcomeType" type="PrivacyPreferenceTypeConstantsBean"
-				minOccurs="0" maxOccurs="1" />
+			<xs:element name="details" type="DObfPreferenceDetailsBean"
+			minOccurs="1" maxOccurs="1" />
 			<xs:element name="pref" type="DObfPreferenceBean"
 				minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
@@ -138,14 +140,10 @@
 
 	<xs:complexType name="IDSPrivacyPreferenceTreeModelBean">
 		<xs:sequence>
-			<xs:element name="affectedIdentity" type="xs:string"
-				minOccurs="1" maxOccurs="1" />
+			<xs:element name="details" type="IDSPreferenceDetailsBean"
+			minOccurs="1" maxOccurs="1" />
 			<xs:element name="pref" type="IDSPreferenceBean"
 				minOccurs="1" maxOccurs="1" />
-			<xs:element name="myPrivacyType" type="PrivacyPreferenceTypeConstantsBean"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="requestor" type="ns1:requestorBean"
-				minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -174,21 +172,19 @@
 
 	<xs:complexType name="PPNPreferenceDetailsBean">
 		<xs:sequence>
-			<xs:element name="dataType" type="xs:string" minOccurs="1"
+			<xs:element name="resource" type="ns3:resource" minOccurs="1"
 				maxOccurs="1" />
-			<xs:element name="dataId" type="ns1:dataIdentifier"
+			<xs:element name="action" type="ns3:action"
 				minOccurs="1" maxOccurs="1" />
 			<xs:element name="requestor" type="ns1:requestorBean"
-				minOccurs="0" maxOccurs="1" />
+				minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="DObfPreferenceDetailsBean">
 		<xs:sequence>
-			<xs:element name="dataType" type="xs:string" minOccurs="1"
+			<xs:element name="resource" type="ns3:resource" minOccurs="1"
 				maxOccurs="1" />
-			<xs:element name="dataId" type="ns1:dataIdentifier"
-				minOccurs="0" maxOccurs="1" />
 			<xs:element name="requestor" type="ns1:requestorBean"
 				minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
@@ -197,12 +193,6 @@
 	<xs:complexType name="PPNPOutcomeBean">
 		<xs:sequence>
 			<xs:element name="effect" type="PrivacyOutcomeConstantsBean"
-				minOccurs="1" maxOccurs="1" />
-			<xs:element name="rule" type="RuleTargetBean" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="conditions" type="ns3:condition"
-				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="myOutcomeType" type="PrivacyPreferenceTypeConstantsBean"
 				minOccurs="1" maxOccurs="1" />
 			<xs:element name="confidenceLevel" type="xs:int" />
 
@@ -213,10 +203,9 @@
 		<xs:sequence>
 			<xs:element name="userIdentity" type="xs:string"
 				minOccurs="1" maxOccurs="1" />
-			<xs:element name="requestor" type="ns1:requestorBean"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="type" type="PrivacyPreferenceTypeConstantsBean"
-				minOccurs="0" maxOccurs="1" />
+			<xs:element name="shouldUseIdentity" type="xs:boolean"
+				minOccurs="1" maxOccurs="1" />
+
 		</xs:sequence>
 	</xs:complexType>
 
@@ -226,6 +215,7 @@
 				minOccurs="1" maxOccurs="1" />
 			<xs:element name="type" type="PrivacyPreferenceTypeConstantsBean"
 				minOccurs="0" maxOccurs="1" />
+			<xs:element name="confidenceLevel" type="xs:int" />
 		</xs:sequence>
 	</xs:complexType>
 

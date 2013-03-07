@@ -22,32 +22,82 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+import org.societies.api.identity.Requestor;
+import org.societies.api.privacytrust.privacy.util.privacypolicy.ResourceUtils;
+import org.societies.api.schema.privacytrust.privacy.model.privacypolicy.Resource;
 
-/**
- * @author Eliza
- * @version 1.0
- * @created 11-Nov-2011 18:58:44
- */
-public interface IPrivacyPreferenceLearningManager {
+public class AccessControlPreferenceDetails {
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
+	private final Resource resource;
+	private Requestor requestor;
 
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
+	public AccessControlPreferenceDetails(Resource resource) {
+		this.resource = resource;
+	}
+
+	public Resource getResource() {
+		return resource;
+	}
+
+	public Requestor getRequestor() {
+		return requestor;
+	}
+
+	public void setRequestor(Requestor requestor) {
+		this.requestor = requestor;
+	}
 	
-	
-	public void mergeDOBFAction(IDObfAction dobfAction);
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((requestor == null) ? 0 : requestor.hashCode());
+		result = prime * result
+				+ ((resource == null) ? 0 : resource.hashCode());
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AccessControlPreferenceDetails other = (AccessControlPreferenceDetails) obj;
+		if (requestor == null) {
+			if (other.requestor != null) {
+				return false;
+			}
+		} else if (!requestor.equals(other.requestor)) {
+			return false;
+		}
+		if (resource == null) {
+			if (other.resource != null) {
+				return false;
+			}
+		} else if (!ResourceUtils.equals(resource, other.resource)) {
+			return false;
+		}
+		return true;
+	}
+	
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AccessControlPreferenceDetails [resource=");
+		builder.append(ResourceUtils.toXmlString(resource));
+		builder.append(", requestor=");
+		builder.append(requestor.toString());
+		builder.append("]");
+		return builder.toString();
+	}
 }

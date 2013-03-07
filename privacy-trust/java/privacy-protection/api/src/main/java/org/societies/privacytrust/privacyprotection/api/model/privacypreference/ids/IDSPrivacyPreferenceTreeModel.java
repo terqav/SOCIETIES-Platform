@@ -22,32 +22,62 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+
+import java.io.Serializable;
+
+import javax.swing.tree.DefaultTreeModel;
+
+import org.societies.api.identity.IIdentity;
+import org.societies.api.identity.Requestor;
+import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreferenceTreeModel;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
+
 
 /**
- * @author Eliza
- * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ * This class is used to represent a privacy preference for IIdentity selection. This class represents a node in a tree. 
+ * If the node is a branch, then the embedded object of the node is a condition (IPrivacyPreferenceCondition), otherwise, 
+ * if it's a leaf, the embedded object is an IIdentitySelectionPreferenceOutcome.
+ * @author Elizabeth
+ *
  */
-public interface IPrivacyPreferenceLearningManager {
+public class IDSPrivacyPreferenceTreeModel extends DefaultTreeModel implements IPrivacyPreferenceTreeModel, Serializable {
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
+	
+	private final IDSPreferenceDetails details;
+	private IPrivacyPreference pref;
+	
+	public IDSPrivacyPreferenceTreeModel(IDSPreferenceDetails details,  IPrivacyPreference preference){
+		super(preference);
+		this.details = details;
+		this.pref = preference;
+	}
 
-	/**
-	 * 
-	 * @param ppnpAction
+
+	/* (non-Javadoc)
+	 * @see org.personalsmartspace.spm.preference.api.platform.IPrivacyPreferenceTreeModel#getPrivacyType()
 	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
-	
-	
-	public void mergeDOBFAction(IDObfAction dobfAction);
+	@Override
+	public PrivacyPreferenceTypeConstants getPrivacyType() {
+		return PrivacyPreferenceTypeConstants.IDENTITY_SELECTION;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.personalsmartspace.spm.preference.api.platform.IPrivacyPreferenceTreeModel#getRootPreference()
+	 */
+	@Override
+	public IPrivacyPreference getRootPreference() {
+		return this.pref;
+	}
+
+
+	public IDSPreferenceDetails getDetails() {
+		return details;
+	}
+
 
 }
+

@@ -22,32 +22,86 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
 
 /**
  * @author Eliza
- * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ *
  */
-public interface IPrivacyPreferenceLearningManager {
+public class AccessControlPreferenceTreeModel {
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
+	private IPrivacyPreference pref;
+	private final AccessControlPreferenceDetails details;
+	
+	public AccessControlPreferenceTreeModel(AccessControlPreferenceDetails details, IPrivacyPreference preference) {
+		this.details = details;
+		this.pref = preference;
+	}
 
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
+	public IPrivacyPreference getPref() {
+		return pref;
+	}
+
+	public void setPref(IPrivacyPreference pref) {
+		this.pref = pref;
+	}
+
+	public AccessControlPreferenceDetails getDetails() {
+		return details;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((details == null) ? 0 : details.hashCode());
+		result = prime * result + ((pref == null) ? 0 : pref.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AccessControlPreferenceTreeModel other = (AccessControlPreferenceTreeModel) obj;
+		if (details == null) {
+			if (other.details != null) {
+				return false;
+			}
+		} else if (!details.equals(other.details)) {
+			return false;
+		}
+		if (pref == null) {
+			if (other.pref != null) {
+				return false;
+			}
+		} else if (!pref.equals(other.pref)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AccessControlPreferenceTreeModel [pref=");
+		builder.append(pref);
+		builder.append(", details=");
+		builder.append(details);
+		builder.append("]");
+		return builder.toString();
+	}
 	
 	
-	public void mergeDOBFAction(IDObfAction dobfAction);
-
+	
+	
 }

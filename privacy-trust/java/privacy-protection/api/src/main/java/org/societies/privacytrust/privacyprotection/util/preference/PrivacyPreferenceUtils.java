@@ -29,19 +29,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ContextPreferenceCondition;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IDSPrivacyPreferenceTreeModel;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreferenceCondition;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IdentitySelectionPreferenceOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.PPNPOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.PPNPrivacyPreferenceTreeModel;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.PrivacyPreference;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.TrustPreferenceCondition;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.OperatorConstants;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyOutcomeConstants;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
 import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxModelBeanTranslator;
 import org.societies.api.context.model.MalformedCtxIdentifierException;
@@ -49,7 +36,22 @@ import org.societies.api.identity.IIdentityManager;
 import org.societies.api.identity.InvalidFormatException;
 import org.societies.api.identity.Requestor;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.RuleTarget;
-import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.*;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.ContextPreferenceConditionBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPreferenceBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPreferenceDetailsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPrivacyPreferenceTreeModelBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IdentitySelectionPreferenceOutcomeBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.OperatorConstantsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPOutcomeBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPreferenceBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPreferenceDetailsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPrivacyPreferenceTreeModelBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyConditionConstantsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyOutcomeConstantsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyPreferenceConditionBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyPreferenceTypeConstantsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.RuleTargetBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.TrustPreferenceConditionBean;
 import org.societies.api.privacytrust.privacy.util.privacypolicy.ActionUtils;
 import org.societies.api.privacytrust.privacy.util.privacypolicy.ConditionUtils;
 import org.societies.api.privacytrust.privacy.util.privacypolicy.RequestorUtils;
@@ -57,8 +59,22 @@ import org.societies.api.privacytrust.privacy.util.privacypolicy.ResourceUtils;
 import org.societies.api.privacytrust.trust.model.MalformedTrustedEntityIdException;
 import org.societies.api.privacytrust.trust.model.TrustModelBeanTranslator;
 import org.societies.api.schema.context.model.CtxAttributeIdentifierBean;
-import org.societies.api.schema.identity.RequestorBean;
-import org.societies.api.schema.privacytrust.privacy.model.privacypolicy.Condition;
+import org.societies.api.schema.privacytrust.privacy.model.privacypolicy.Resource;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ContextPreferenceCondition;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyOutcome;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreferenceCondition;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.PrivacyPreference;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.TrustPreferenceCondition;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.OperatorConstants;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyOutcomeConstants;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IDSPreferenceDetails;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IDSPrivacyPreferenceTreeModel;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IdentitySelectionPreferenceOutcome;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPOutcome;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPreferenceDetails;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPrivacyPreferenceTreeModel;
 
 /**
  * @author Eliza
@@ -73,12 +89,13 @@ public class PrivacyPreferenceUtils {
 	 */
 	
 	
-	public static PPNPrivacyPreferenceTreeModel toPPNPrivacyPreferenceTreeModel(PPNPrivacyPreferenceTreeModelBean bean, IIdentityManager idMgr){
-		
-		return new PPNPrivacyPreferenceTreeModel(bean.getDataType(), toPPNPrivacyPreference(bean.getPref(), idMgr));
+	public static PPNPrivacyPreferenceTreeModel toPPNPrivacyPreferenceTreeModel(PPNPrivacyPreferenceTreeModelBean bean, IIdentityManager idMgr) throws InvalidFormatException, URISyntaxException{
+
+		PPNPreferenceDetails details = new PPNPreferenceDetails(bean.getDetails().getResource(), RequestorUtils.toRequestor(bean.getDetails().getRequestor(), idMgr), bean.getDetails().getAction());
+		return new PPNPrivacyPreferenceTreeModel(details, toPPNPrivacyPreference(bean.getPref(), idMgr));
 	}
 	
-	public static PrivacyPreference toPPNPrivacyPreference(PPNPreferenceBean bean, IIdentityManager idMgr){
+	public static PrivacyPreference toPPNPrivacyPreference(PPNPreferenceBean bean, IIdentityManager idMgr) throws URISyntaxException{
 		
 		
 		if (bean.getCondition()!=null){
@@ -93,6 +110,7 @@ public class PrivacyPreferenceUtils {
 		}
 		
 		if (bean.getOutcome()!=null){
+			
 			return new PrivacyPreference(toPPNOutcome(bean.getOutcome(), idMgr));
 		}
 		
@@ -109,16 +127,9 @@ public class PrivacyPreferenceUtils {
 	}
 
 	private static IPrivacyOutcome toPPNOutcome(
-			PPNPOutcomeBean bean, IIdentityManager idMgr) {
-		
-		try {
-			return new PPNPOutcome(toPrivacyOutcomeConstant(bean.getEffect()), toRuleTarget(bean.getRule(), idMgr), ConditionUtils.toConditions(bean.getConditions()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		
+			PPNPOutcomeBean bean, IIdentityManager idMgr) throws URISyntaxException {
+			return new PPNPOutcome(toPrivacyOutcomeConstant(bean.getEffect()));
+	
 		
 	}
 
@@ -196,20 +207,16 @@ public class PrivacyPreferenceUtils {
 	}
 	
 	
-	public static IDSPrivacyPreferenceTreeModel toIDSPrivacyPreferenceTreeModel(IDSPrivacyPreferenceTreeModelBean bean, IIdentityManager idMgr){
+	public static IDSPrivacyPreferenceTreeModel toIDSPrivacyPreferenceTreeModel(IDSPrivacyPreferenceTreeModelBean bean, IIdentityManager idMgr) throws InvalidFormatException{
 
+			IDSPreferenceDetails details = new IDSPreferenceDetails(idMgr.fromJid(bean.getDetails().getAffectedIdentity()));
+			details.setRequestor(RequestorUtils.toRequestor(bean.getDetails().getRequestor(), idMgr));
+			return new IDSPrivacyPreferenceTreeModel(details , toIDSPrivacyPreference(bean.getPref(), idMgr));
+			
 
-		try {
-			return new IDSPrivacyPreferenceTreeModel(idMgr.fromJid(bean.getAffectedIdentity()), toIDSPrivacyPreference(bean.getPref(), idMgr));
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
 	}
 	
-	public static PrivacyPreference toIDSPrivacyPreference(IDSPreferenceBean bean, IIdentityManager idMgr){
+	public static PrivacyPreference toIDSPrivacyPreference(IDSPreferenceBean bean, IIdentityManager idMgr) throws InvalidFormatException{
 		if (bean.getCondition()!=null){
 			PrivacyPreference preference = new PrivacyPreference(toPrivacyPreferenceCondition(bean.getCondition()));
 			List<IDSPreferenceBean> beans = bean.getChildren();
@@ -238,22 +245,14 @@ public class PrivacyPreferenceUtils {
 	}
 
 	private static IdentitySelectionPreferenceOutcome toIDSOutcome(
-			IdentitySelectionPreferenceOutcomeBean bean, IIdentityManager idMgr) {
+			IdentitySelectionPreferenceOutcomeBean bean, IIdentityManager idMgr) throws InvalidFormatException {
 		IdentitySelectionPreferenceOutcome outcome = new IdentitySelectionPreferenceOutcome();
 		
-		try {
-			outcome.setIdentity(idMgr.fromJid(bean.getUserIdentity()));
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		try {
-			outcome.setRequestor(RequestorUtils.toRequestor(bean.getRequestor(), idMgr));
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			outcome.setIdentity(idMgr.fromJid(bean.getUserIdentity()));
+			outcome.setShouldUseIdentity(bean.isShouldUseIdentity());
+		
+
 		
 		return outcome;
 	}
@@ -265,15 +264,11 @@ public class PrivacyPreferenceUtils {
 	
 	public static PPNPrivacyPreferenceTreeModelBean toPPNPrivacyPreferenceTreeModelBean(PPNPrivacyPreferenceTreeModel model){
 		PPNPrivacyPreferenceTreeModelBean bean = new PPNPrivacyPreferenceTreeModelBean();
-		
-		
-		bean.setDataId(model.getAffectedDataId());
-		bean.setDataType(model.getDataType());
-		bean.setMyOutcomeType(PrivacyPreferenceTypeConstantsBean.PPNP);
-		if (model.getRequestor()!=null){
-			bean.setRequestor(RequestorUtils.toRequestorBean(model.getRequestor()));
-		}
-		
+		PPNPreferenceDetailsBean detailsBean = new PPNPreferenceDetailsBean();
+		detailsBean.setAction(model.getDetails().getAction());
+		detailsBean.setRequestor(RequestorUtils.toRequestorBean(model.getDetails().getRequestor()));
+		detailsBean.setResource(model.getDetails().getResource());
+		bean.setDetails(detailsBean);
 		bean.setPref(toPPNPreferenceBean(model.getRootPreference()));
 		
 		return bean;
@@ -361,12 +356,9 @@ public class PrivacyPreferenceUtils {
 
 	private static PPNPOutcomeBean toPPNPOutcomeBean(PPNPOutcome outcome) {
 		PPNPOutcomeBean bean = new PPNPOutcomeBean();
-		
-		bean.setConditions(ConditionUtils.toConditionBeans(outcome.getConditions()));
 		bean.setConfidenceLevel(outcome.getConfidenceLevel());
 		bean.setEffect(toPrivacyOutcomeConstantsBean(outcome.getEffect()));
-		bean.setMyOutcomeType(toPrivacyPreferenceTypeConstantsBean(outcome.getOutcomeType()));
-		bean.setRule(toRuleTargetBean(outcome.getRuleTarget()));
+		
 		
 		return bean;
 	}
@@ -386,11 +378,11 @@ public class PrivacyPreferenceUtils {
 
 	private static PrivacyPreferenceTypeConstantsBean toPrivacyPreferenceTypeConstantsBean(
 			PrivacyPreferenceTypeConstants outcomeType) {
-		if (outcomeType.compareTo(PrivacyPreferenceTypeConstants.PPNP)==0){
+		if (outcomeType.compareTo(PrivacyPreferenceTypeConstants.PRIVACY_POLICY_NEGOTIATION)==0){
 			return PrivacyPreferenceTypeConstantsBean.PPNP;
 		}
 		
-		if (outcomeType.compareTo(PrivacyPreferenceTypeConstants.DOBF)==0){
+		if (outcomeType.compareTo(PrivacyPreferenceTypeConstants.DATA_OBFUSCATION)==0){
 			return PrivacyPreferenceTypeConstantsBean.DOBF;
 		}
 		
@@ -411,11 +403,12 @@ public class PrivacyPreferenceUtils {
 	
 	public static IDSPrivacyPreferenceTreeModelBean toIDSPreferenceTreeModelBean(IDSPrivacyPreferenceTreeModel model){
 		IDSPrivacyPreferenceTreeModelBean bean = new IDSPrivacyPreferenceTreeModelBean();
-		
-		bean.setAffectedIdentity(model.getAffectedDPI().getJid());
-		bean.setMyPrivacyType(PrivacyPreferenceTypeConstantsBean.IDS);
+		IDSPreferenceDetailsBean detailsBean = new IDSPreferenceDetailsBean();
+		detailsBean.setAffectedIdentity(model.getDetails().getAffectedDPI().getJid());
+		detailsBean.setRequestor(RequestorUtils.toRequestorBean(model.getDetails().getRequestor()));
+		bean.setDetails(detailsBean);
 		bean.setPref(toIDSPrivacyPreferenceBean(model.getRootPreference()));
-		bean.setRequestor(RequestorUtils.toRequestorBean(model.getRequestor()));
+		
 		
 		return bean;
 	}
@@ -448,8 +441,7 @@ public class PrivacyPreferenceUtils {
 	private static IdentitySelectionPreferenceOutcomeBean toIdentitySelectionPreferenceOutcomeBean(
 			IdentitySelectionPreferenceOutcome outcome) {
 		IdentitySelectionPreferenceOutcomeBean bean = new IdentitySelectionPreferenceOutcomeBean();
-		bean.setRequestor(RequestorUtils.toRequestorBean(outcome.getRequestor()));
-		bean.setType(PrivacyPreferenceTypeConstantsBean.IDS);
+		bean.setShouldUseIdentity(outcome.isShouldUseIdentity());
 		bean.setUserIdentity(outcome.getIdentity().getJid());
 		
 		return bean;

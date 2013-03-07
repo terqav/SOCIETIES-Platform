@@ -22,32 +22,39 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.api;
+package org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf;
 
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.IDObfAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IIDSAction;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.IPPNPAction;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyOutcome;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
+
+
 
 /**
+ * This class is used to define the level of obfuscation that has to be applied to
+ * a context attribute before being disclosed to an external entity.
  * @author Eliza
  * @version 1.0
- * @created 11-Nov-2011 18:58:44
+ * @created 11-Nov-2011 17:06:54
  */
-public interface IPrivacyPreferenceLearningManager {
+public class DObfOutcome extends IPrivacyOutcome implements IDObfAction {
 
-	/**
-	 * 
-	 * @param idsAction
-	 */
-	public void mergeIDSAction(IIDSAction idsAction);
+	private double obfuscationLevel;
 
-	/**
-	 * 
-	 * @param ppnpAction
-	 */
-	public void mergePPNPAction(IPPNPAction ppnpAction);
-	
-	
-	public void mergeDOBFAction(IDObfAction dobfAction);
+	public DObfOutcome(double obfuscationLevel){
+		this.obfuscationLevel = obfuscationLevel;
+	}
+
+	public void finalize() throws Throwable {
+
+	}
+
+
+	public PrivacyPreferenceTypeConstants getOutcomeType(){
+		return PrivacyPreferenceTypeConstants.DATA_OBFUSCATION;
+	}
+
+	public double getObfuscationLevel(){
+		return obfuscationLevel;
+	}
 
 }
