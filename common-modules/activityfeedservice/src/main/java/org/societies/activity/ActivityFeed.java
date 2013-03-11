@@ -396,9 +396,14 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
         try{
             session = this.getSessionFactory().openSession();
 
-            retList = session.createCriteria(Activity.class).add(Restrictions.gt("time", new Long(fromTime))).add(Restrictions.lt("time", new Long(toTime))).add(Restrictions.eq("ownerId",this.getId())).list();
-            LOG.info(" list size: "+retList.size()+" no criteria: "+session.createCriteria(Activity.class).list().size());
-            LOG.info(" FISK "+session.createCriteria(Activity.class).add(Restrictions.gt("time", new Long(fromTime))).add(Restrictions.lt("time", new Long(toTime))).list().size());
+            retList = session.createCriteria(Activity.class)
+                    .add(Restrictions.gt("time", new Long(fromTime)))
+                    .add(Restrictions.lt("time", new Long(toTime)))
+                    .add(Restrictions.eq("ownerId",this.getId())).list();
+            //LOG.info(" list size: "+retList.size()+" no criteria: "+session.createCriteria(Activity.class).list().size());
+            //LOG.info(" FISK "+session.createCriteria(Activity.class).add(Restrictions.gt("time", new Long(fromTime))).add(Restrictions.lt("time", new Long(toTime))).list().size());
+            //List<Activity> heh = session.createCriteria(Activity.class).add(Restrictions.gt("time", new Long(fromTime))).add(Restrictions.lt("time", new Long(toTime))).list();
+
         } catch (Exception e) {
             LOG.error("getting activities query failed: ");
             e.printStackTrace();
