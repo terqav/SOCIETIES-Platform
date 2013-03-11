@@ -22,50 +22,46 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.context.user.db.impl.event.hibernate;
+package org.societies.context.broker.impl.comm.callbacks;
 
-import org.hibernate.event.PostUpdateEvent;
-import org.hibernate.event.PostUpdateEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.societies.context.api.event.CtxChangeEventTopic;
-import org.societies.context.user.db.impl.model.CtxModelObjectDAO;
-import org.springframework.stereotype.Service;
+import org.societies.api.context.CtxException;
+import org.societies.context.broker.impl.comm.ICtxCallback;
 
 /**
  * Describe your class here...
  *
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.5
+ * @since 1.1
  */
-@Service
-public class PostUpdateUserCtxEventListener implements PostUpdateEventListener {
-
-	private static final long serialVersionUID = -8235230620785626161L;
+public abstract class CtxCallback implements ICtxCallback {
 	
 	/** The logging facility. */
-	private static final Logger LOG = LoggerFactory.getLogger(PostUpdateUserCtxEventListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CtxCallback.class);
 	
-	PostUpdateUserCtxEventListener() {
+	private CtxException exception;
+	
+	/*
+	 * @see org.societies.context.broker.impl.comm.ICtxCallback#getException()
+	 */
+	@Override
+	public CtxException getException() {
 		
-		if (LOG.isInfoEnabled())
-			LOG.info(this.getClass() + " instantiated");
+		return this.exception;
 	}
 
 	/*
-	 * @see org.hibernate.event.PostUpdateEventListener#onPostUpdate(org.hibernate.event.PostUpdateEvent)
+	 * @see org.societies.context.broker.impl.comm.ICtxCallback#onException(org.societies.api.context.CtxException)
 	 */
 	@Override
-	public void onPostUpdate(PostUpdateEvent event) {
+	public void onException(CtxException exception) {
 		
-		if (LOG.isTraceEnabled())
-			LOG.trace("Received PostUpdateEvent for context hibernate entity " + event.getId());
-		
-		// Ignore events for non CtxModelObjects
-		if (!(event.getEntity() instanceof CtxModelObjectDAO))
-			return;
-		
-		final CtxModelObjectDAO ctxModelObject = (CtxModelObjectDAO) event.getEntity();
-		ctxModelObject.getEventTopics().add(CtxChangeEventTopic.MODIFIED);
+		if (LOG.isDebugEnabled())
+			LOG.debug("onException: exception=" + exception);
+		this.exception = exception;
+		synchronized (this) {	            
+			notifyAll();	        
+		}
 	}
 }
