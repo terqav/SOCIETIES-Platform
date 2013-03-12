@@ -24,72 +24,109 @@
  */
 package org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol;
 
-import org.societies.api.privacytrust.privacy.util.privacypolicy.DecisionUtils;
-import org.societies.api.schema.privacytrust.privacy.model.privacypolicy.Decision;
+import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.util.List;
+
+
+import org.societies.api.identity.Requestor;
+import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.RuleTarget;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyOutcomeConstantsBean;
+import org.societies.api.privacytrust.privacy.model.privacypolicy.Action;
+import org.societies.api.privacytrust.privacy.model.privacypolicy.Condition;
+import org.societies.api.schema.identity.DataIdentifier;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyOutcome;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyOutcomeConstants;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
 
 /**
- * @author Eliza
+ * This class represents a Rule in XACML format. The PPNPOutcome class contains the following:
+ * Effect : PrivacyOutcomeConstants (ALLOW, BLOCK)
+ * RuleTarget: A target specifies:
+ * 		the Subject: by Identity and if applicable an IServiceResourceIdentifier
+ * 		the Resource: by CtxAttributeIdentifier
+ * 		the Action: READ,WRITE,CREATE,DELETE
+ * Conditions: a list of conditions that have to be satisfied by the other party. These are processed during the negotiation phase 
+ * and not during the PPN preference evaluation phase.
+ * 
+ * @author Elizabeth
  *
  */
-public class AccessControlOutcome {
+public class AccessControlOutcome extends IPrivacyOutcome implements Serializable {
 
-	private Decision decision;
+
+	private PrivacyOutcomeConstantsBean effect;
+
+	private int confidenceLevel;
 	
-	public AccessControlOutcome(Decision decision) {
-		this.setDecision(decision);
+	
+
+	public AccessControlOutcome(PrivacyOutcomeConstantsBean effect) throws URISyntaxException{
+		this.effect = effect;
+	}
+	
+	public PrivacyOutcomeConstantsBean getEffect(){
+		return this.effect;
 	}
 
 
-	public Decision getDecision() {
-		return decision;
-	}
-
-
-	public void setDecision(Decision decision) {
-		this.decision = decision;
-	}
-	
-	
+	/* (non-Javadoc)
+	 * @see org.personalsmartspace.spm.preference.api.platform.IPrivacyOutcome#getOutcomeType()
+	 */
 	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("AccessControlOutcome [decision=");
-		builder.append(DecisionUtils.toXmlString(decision));
-		builder.append("]");
-		return builder.toString();
+	public PrivacyPreferenceTypeConstants getOutcomeType() {
+		return PrivacyPreferenceTypeConstants.PRIVACY_POLICY_NEGOTIATION;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.personalsmartspace.spm.preference.api.platform.IPrivacyOutcome#getConfidenceLevel()
+	 */
+	@Override
+	public int getConfidenceLevel() {
+		return this.confidenceLevel;
+	}
+	
+	public void setConfidenceLevel(int c){
+		this.confidenceLevel = c;
+	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((decision == null) ? 0 : decision.hashCode());
+		int result = super.hashCode();
+		result = prime * result + ((effect == null) ? 0 : effect.hashCode());
+
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("PPNPOutcome [effect=");
+		builder.append(effect);
+		builder.append(", confidenceLevel=");
+		builder.append(confidenceLevel);
+		builder.append("]");
+		return builder.toString();
+	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		AccessControlOutcome other = (AccessControlOutcome) obj;
-		if (!DecisionUtils.equals(decision,other.decision)) {
+		if (effect != other.effect) {
 			return false;
 		}
+
 		return true;
 	}
 
-
-
-	
-	
 }

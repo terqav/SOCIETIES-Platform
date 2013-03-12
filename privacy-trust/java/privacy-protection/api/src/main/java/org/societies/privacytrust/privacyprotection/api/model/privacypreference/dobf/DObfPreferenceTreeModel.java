@@ -34,6 +34,7 @@ import org.societies.api.identity.DataIdentifierFactory;
 import org.societies.api.identity.DataIdentifierUtil;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.Requestor;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfPreferenceDetailsBean;
 import org.societies.api.schema.identity.DataIdentifier;
 import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
@@ -51,10 +52,10 @@ import org.societies.privacytrust.privacyprotection.api.model.privacypreference.
  */
 public class DObfPreferenceTreeModel extends DefaultTreeModel implements IPrivacyPreferenceTreeModel, Serializable{
 
-	private final DObfPreferenceDetails details;
+	private final DObfPreferenceDetailsBean details;
 	private IPrivacyPreference pref;
 	
-	public DObfPreferenceTreeModel(DObfPreferenceDetails details, IPrivacyPreference preference){
+	public DObfPreferenceTreeModel(DObfPreferenceDetailsBean details, IPrivacyPreference preference){
 		super(preference);
 		this.details = details;
 		this.pref = preference;
@@ -77,7 +78,7 @@ public class DObfPreferenceTreeModel extends DefaultTreeModel implements IPrivac
 	}
 
 
-	public DObfPreferenceDetails getDetails() {
+	public DObfPreferenceDetailsBean getDetails() {
 		return details;
 	}
 	

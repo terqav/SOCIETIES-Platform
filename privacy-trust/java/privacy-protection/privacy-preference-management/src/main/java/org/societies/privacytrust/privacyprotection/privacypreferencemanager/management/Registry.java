@@ -30,8 +30,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxModelBeanTranslator;
 import org.societies.api.context.model.MalformedCtxIdentifierException;
@@ -39,6 +37,8 @@ import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.IIdentityManager;
 import org.societies.api.identity.InvalidFormatException;
 import org.societies.api.identity.Requestor;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.AccCtrlMappings;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.AccessControlPreferenceDetailsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfMappings;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfPreferenceDetailsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSMappings;
@@ -48,11 +48,11 @@ import org.societies.api.internal.schema.privacytrust.privacyprotection.preferen
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.RegistryBean;
 import org.societies.api.privacytrust.privacy.util.privacypolicy.RequestorUtils;
 import org.societies.api.schema.context.model.CtxAttributeIdentifierBean;
-import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.DObfPreferenceDetails;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IDSPreferenceDetails;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.PPNPreferenceDetails;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol.AccessControlPreferenceDetails;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.DObfPreferenceDetails;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IDSPreferenceDetails;
+import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPreferenceDetails;
 
 public class Registry implements Serializable{
 
@@ -60,32 +60,39 @@ public class Registry implements Serializable{
 	private Hashtable<PPNPreferenceDetails, CtxAttributeIdentifier> ppnpMappings;
 	private Hashtable<IDSPreferenceDetails, CtxAttributeIdentifier> idsMappings;
 	private Hashtable<DObfPreferenceDetails, CtxAttributeIdentifier> dobfMappings;
+	private Hashtable<AccessControlPreferenceDetails, CtxAttributeIdentifier> accCtrlMappings;
 
 	int ppnp_index;
 	int ids_index;
 	int dobf_index;
+	int accCtrl_index;
 
 
 	public Registry(){
 		this.ppnpMappings = new Hashtable<PPNPreferenceDetails, CtxAttributeIdentifier>();
 		this.idsMappings = new Hashtable<IDSPreferenceDetails, CtxAttributeIdentifier>();
 		this.dobfMappings = new Hashtable<DObfPreferenceDetails, CtxAttributeIdentifier>();
+		this.accCtrlMappings = new Hashtable<AccessControlPreferenceDetails, CtxAttributeIdentifier>();
 		this.dobf_index = 0;
 		ppnp_index = 0;
 		ids_index = 0;
+		this.accCtrl_index = 0;
 	}
 
 
 	String getNameForNewPreference(PrivacyPreferenceTypeConstants preferenceType){
-		if (preferenceType.equals(PrivacyPreferenceTypeConstants.PPNP)){
+		if (preferenceType.equals(PrivacyPreferenceTypeConstants.PRIVACY_POLICY_NEGOTIATION)){
 			this.ppnp_index +=1;
 			return "ppnp_preference_"+this.ppnp_index; 
-		}else if (preferenceType.equals(PrivacyPreferenceTypeConstants.IDS)){
+		}else if (preferenceType.equals(PrivacyPreferenceTypeConstants.IDENTITY_SELECTION)){
 			this.ids_index += 1;
 			return "ids_preference_"+this.ids_index;
-		}else{
+		}else if (preferenceType.equals(PrivacyPreferenceTypeConstants.DATA_OBFUSCATION)){
 			this.dobf_index +=1;
 			return "dobf_preference_"+this.dobf_index;
+		}else{
+			this.accCtrl_index +=1;
+			return "accCtrl_preference_"+this.accCtrl_index;
 		}
 
 	}
@@ -104,6 +111,9 @@ public class Registry implements Serializable{
 		this.dobfMappings.put(details, preferenceCtxID);
 	}
 	
+	void addAccessCtrlPreference(AccessControlPreferenceDetails details, CtxAttributeIdentifier preferenceCtxID){
+		this.accCtrlMappings.put(details, preferenceCtxID);
+	}
 	void removePPNPreference(PPNPreferenceDetails details){
 		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
 		while (e.hasMoreElements()){
@@ -129,6 +139,13 @@ public class Registry implements Serializable{
 		DObfPreferenceDetails d = this.containsDObf(details);
 		if (null!=d){
 			this.dobfMappings.remove(d);
+		}
+	}
+	
+	void removeAccCtrlPreference(AccessControlPreferenceDetails details){
+		AccessControlPreferenceDetails d = this.containsAccCtrl(details);
+		if (null!=d){
+			this.accCtrlMappings.remove(d);
 		}
 	}
 	private PPNPreferenceDetails containsPPNP(PPNPreferenceDetails d){
@@ -169,6 +186,17 @@ public class Registry implements Serializable{
 		return null;
 	}
 	
+	private AccessControlPreferenceDetails containsAccCtrl(AccessControlPreferenceDetails d){
+		Enumeration<AccessControlPreferenceDetails> e = this.accCtrlMappings.keys();
+		
+		while(e.hasMoreElements()){
+			AccessControlPreferenceDetails detail = e.nextElement();
+			if (d.equals(detail)){
+				return detail;
+			}
+		}
+		return null;
+	}
 	
 	CtxAttributeIdentifier getPPNPreference(PPNPreferenceDetails details){
 		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
@@ -210,12 +238,22 @@ public class Registry implements Serializable{
 		return null;
 	}
 	
+	CtxAttributeIdentifier getAccCtrlPreference(AccessControlPreferenceDetails details){
+		Enumeration<AccessControlPreferenceDetails> e = this.accCtrlMappings.keys();
+		while(e.hasMoreElements()){
+			AccessControlPreferenceDetails d = e.nextElement();
+			if (details.equals(d)){
+				return this.accCtrlMappings.get(d);
+			}
+		}
+		return null;
+	}
 	List<CtxAttributeIdentifier> getPPNPreferences(String contextType){
 		List<CtxAttributeIdentifier> preferenceCtxIDs = new ArrayList<CtxAttributeIdentifier>();
 		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
 		while (e.hasMoreElements()){
 			PPNPreferenceDetails d = e.nextElement();
-			if (d.getDataType().equals(contextType)){
+			if (d.getResource().getDataType().equals(contextType)){
 				preferenceCtxIDs.add(this.ppnpMappings.get(d));
 			}
 		}
@@ -235,6 +273,19 @@ public class Registry implements Serializable{
 		return preferenceCtxIDs;
 	}
 	
+	List<CtxAttributeIdentifier> getAccCtrlPreferences(String contextType){
+		List<CtxAttributeIdentifier> preferenceCtxIDs = new ArrayList<CtxAttributeIdentifier>();
+		Enumeration<AccessControlPreferenceDetails> e = this.accCtrlMappings.keys();
+		
+		while(e.hasMoreElements()){
+			AccessControlPreferenceDetails d = e.nextElement();
+			if (d.getResource().getDataType().equals(contextType)){
+				preferenceCtxIDs.add(this.accCtrlMappings.get(d));
+			}
+		}
+		
+		return preferenceCtxIDs;
+	}
 	List<CtxAttributeIdentifier> getDObfPreferences(CtxAttributeIdentifier ctxId){
 		//TODO: TBD with Olivier
 		return new ArrayList<CtxAttributeIdentifier>();
@@ -245,7 +296,7 @@ public class Registry implements Serializable{
 		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
 		while (e.hasMoreElements()){
 			PPNPreferenceDetails d = e.nextElement();
-			if (d.getDataType().equals(contextType)){
+			if (d.getResource().getDataType().equals(contextType)){
 				if (d.getRequestor().equals(requestor)){
 					preferenceCtxIDs.add(this.ppnpMappings.get(d));
 				}
@@ -268,14 +319,28 @@ public class Registry implements Serializable{
 		}
 		return preferenceCtxIDs;
 	}
+	
+	List<CtxAttributeIdentifier> getAccCtrlPreferences(String contextType, Requestor requestor){
+		List<CtxAttributeIdentifier> preferenceCtxIDs = new ArrayList<CtxAttributeIdentifier>();
+		Enumeration<AccessControlPreferenceDetails> e = this.accCtrlMappings.keys();
+		while (e.hasMoreElements()){
+			AccessControlPreferenceDetails d = e.nextElement();
+			if (d.getResource().getDataType().equals(contextType)){
+				if (d.getRequestor().equals(requestor)){
+					preferenceCtxIDs.add(this.accCtrlMappings.get(d));
+				}
+			}
+		}
+		return preferenceCtxIDs;
+	}
 	List<CtxAttributeIdentifier> getPPNPreferences(String contextType, CtxAttributeIdentifier affectedCtxID){
 		List<CtxAttributeIdentifier> preferenceCtxIDs = new ArrayList<CtxAttributeIdentifier>();
 		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
 		while (e.hasMoreElements()){
 			PPNPreferenceDetails d = e.nextElement();
-			if (d.getDataType().equals(contextType)){
-				if (d.getAffectedDataId()!=null){
-					if (d.getAffectedDataId().toString().equalsIgnoreCase(affectedCtxID.toString())){
+			if (d.getResource().getDataType().equals(contextType)){
+				if (d.getResource().getDataIdUri()!=null){
+					if (d.getResource().getDataIdUri().equalsIgnoreCase(affectedCtxID.getUri())){
 						preferenceCtxIDs.add(this.ppnpMappings.get(d));
 
 					}
@@ -287,14 +352,14 @@ public class Registry implements Serializable{
 
 
 
-	List<CtxAttributeIdentifier> getPPNPreferences(String contextType, CtxAttributeIdentifier affectedCtxID, Requestor requestor){
+	List<CtxAttributeIdentifier> getAccCtrlPreferences(String contextType, CtxAttributeIdentifier affectedCtxID, Requestor requestor){
 		List<CtxAttributeIdentifier> preferenceCtxIDs = new ArrayList<CtxAttributeIdentifier>();
-		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
+		Enumeration<AccessControlPreferenceDetails> e = this.accCtrlMappings.keys();
 		while (e.hasMoreElements()){
-			PPNPreferenceDetails d = e.nextElement();
-			if (d.getDataType().equals(contextType)){
-				if (d.getAffectedDataId()!=null){
-					if (d.getAffectedDataId().toString().equalsIgnoreCase(affectedCtxID.toString())){
+			AccessControlPreferenceDetails d = e.nextElement();
+			if (d.getResource().getDataType().equals(contextType)){
+				if (d.getResource().getDataIdUri()!=null){
+					if (d.getResource().getDataIdUri().equalsIgnoreCase(affectedCtxID.getUri())){
 						if (d.getRequestor().equals(requestor))
 							preferenceCtxIDs.add(ppnpMappings.get(d));
 					}
@@ -329,22 +394,6 @@ public class Registry implements Serializable{
 	}*/
 
 
-	CtxAttributeIdentifier getPPNPreference(String contextType, CtxAttributeIdentifier affectedCtxID, Requestor requestor){
-		Enumeration<PPNPreferenceDetails> e = this.ppnpMappings.keys();
-		while (e.hasMoreElements()){
-			PPNPreferenceDetails d = e.nextElement();
-			if (d.getDataType().equals(contextType)){
-				if (d.getAffectedDataId()!=null){
-					if (d.getAffectedDataId().toString().equalsIgnoreCase(affectedCtxID.toString())){
-						if (d.getRequestor().equals(requestor)){
-							return this.ppnpMappings.get(d);
-						}						
-					}
-				}
-			}
-		}
-		return null;
-	}
 
 
 	CtxAttributeIdentifier getIDSPreference(IIdentity affectedDPI, Requestor requestor){
@@ -413,6 +462,17 @@ public class Registry implements Serializable{
 	}
 	
 	
+	public List<AccessControlPreferenceDetails> getAccCtrlPreferenceDetails(){
+		Enumeration<AccessControlPreferenceDetails> keys = this.accCtrlMappings.keys();
+		
+		ArrayList<AccessControlPreferenceDetails> details = new ArrayList<AccessControlPreferenceDetails>();
+		while(keys.hasMoreElements()){
+			details.add(keys.nextElement());
+		}
+		
+		return details;
+	}
+	
 	/*
 	 * converter methods
 	 */
@@ -465,11 +525,7 @@ public class Registry implements Serializable{
 	
 	public static DObfPreferenceDetails toDObfPreferenceDetails(
 			DObfPreferenceDetailsBean bean, IIdentityManager idMgr) {
-		DObfPreferenceDetails details = new DObfPreferenceDetails(bean.getDataType());
-		
-		if (bean.getDataId()!=null){
-			details.setAffectedDataId(bean.getDataId());
-		}
+		DObfPreferenceDetails details = new DObfPreferenceDetails(bean.getResource());
 		
 		if (bean.getRequestor()!=null){
 			try {
@@ -479,8 +535,6 @@ public class Registry implements Serializable{
 				e.printStackTrace();
 			}
 		}
-		
-		details.setDataType(bean.getDataType());
 		return details;
 	}
 
@@ -488,6 +542,7 @@ public class Registry implements Serializable{
 	public static IDSPreferenceDetails toIDSPreferenceDetails(
 			IDSPreferenceDetailsBean bean, IIdentityManager idMgr) {
 		try {
+			
 			IDSPreferenceDetails details = new IDSPreferenceDetails(idMgr.fromJid(bean.getAffectedIdentity()));
 			if (bean.getRequestor()!=null){
 				details.setRequestor(RequestorUtils.toRequestor(bean.getRequestor(), idMgr));
@@ -505,21 +560,13 @@ public class Registry implements Serializable{
 
 	public static PPNPreferenceDetails toPPNPreferenceDetails(
 			PPNPreferenceDetailsBean bean, IIdentityManager idMgr) {
-		PPNPreferenceDetails details = new PPNPreferenceDetails(bean.getDataType());
-		if (bean.getDataId()!=null){
-			details.setAffectedDataId(bean.getDataId());
+		PPNPreferenceDetails details =null;
+		try {
+			details = new PPNPreferenceDetails(bean.getResource(), RequestorUtils.toRequestor(bean.getRequestor(), idMgr), bean.getAction());
+		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		if (bean.getRequestor()!=null){
-			try {
-				details.setRequestor(RequestorUtils.toRequestor(bean.getRequestor(), idMgr));
-			} catch (InvalidFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		bean.setDataType(bean.getDataType());
 		return details;
 	}
 
@@ -532,6 +579,7 @@ public class Registry implements Serializable{
 		bean.setDobfIndex(this.dobf_index);
 		bean.setPpnIndex(this.ppnp_index);
 		bean.setIdsIndex(this.ids_index);
+		bean.setAccCtrlIndex(this.accCtrl_index);
 		
 		ArrayList<PPNMappings> ppnList = new ArrayList<PPNMappings>();
 		
@@ -573,6 +621,20 @@ public class Registry implements Serializable{
 		}
 		
 		bean.setDobfMappings(dobfList);
+		
+		
+		ArrayList<AccCtrlMappings> accCtrlList = new ArrayList<AccCtrlMappings>();
+		List<AccessControlPreferenceDetails> accCtrlDetails = this.getAccCtrlPreferenceDetails();
+		
+		for (AccessControlPreferenceDetails detail : accCtrlDetails){
+			AccCtrlMappings accMap = new AccCtrlMappings();
+			accMap.setAccCtrlPrefDetails(toBean(detail));
+			accMap.setCtxID((CtxAttributeIdentifierBean) CtxModelBeanTranslator.getInstance().fromCtxIdentifier(this.accCtrlMappings.get(detail)));
+			accCtrlList.add(accMap);
+		}
+		
+		bean.setAccCtrlMappings(accCtrlList);
+		
 		return bean;
 		
 	}
@@ -581,16 +643,8 @@ public class Registry implements Serializable{
 	private DObfPreferenceDetailsBean toBean(DObfPreferenceDetails detail) {
 
 		DObfPreferenceDetailsBean bean = new DObfPreferenceDetailsBean();
-		
-		if (detail.getAffectedDataId()!=null){
-			bean.setDataId(detail.getAffectedDataId());
-		}
-		if (detail.getRequestor()!=null){
-			bean.setRequestor(RequestorUtils.toRequestorBean(detail.getRequestor()));
-		}
-		
-		bean.setDataType(detail.getDataType());
-		
+		bean.setRequestor(RequestorUtils.toRequestorBean(detail.getRequestor()));
+		bean.setResource(detail.getResource());
 		return bean;
 		
 	}
@@ -611,14 +665,17 @@ public class Registry implements Serializable{
 	private PPNPreferenceDetailsBean toBean(PPNPreferenceDetails detail) {
 		PPNPreferenceDetailsBean bean = new PPNPreferenceDetailsBean();
 		
-		if (detail.getAffectedDataId()!=null){
-			bean.setDataId(detail.getAffectedDataId());
-		}
-		bean.setDataType(detail.getDataType());
-		if (detail.getRequestor()!=null){
-			bean.setRequestor(RequestorUtils.toRequestorBean(detail.getRequestor()));
-		}
+		bean.setAction(detail.getAction());
+		bean.setResource(detail.getResource());
+		bean.setRequestor(RequestorUtils.toRequestorBean(detail.getRequestor()));		
+		return bean;
+	}
+	
+	private AccessControlPreferenceDetailsBean toBean(AccessControlPreferenceDetails detail){
+		AccessControlPreferenceDetailsBean bean = new AccessControlPreferenceDetailsBean();
 		
+		bean.setRequestor(RequestorUtils.toRequestorBean(detail.getRequestor()));
+		bean.setResource(detail.getResource());
 		return bean;
 	}
 }

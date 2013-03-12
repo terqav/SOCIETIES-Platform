@@ -32,6 +32,7 @@ import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.identity.DataIdentifierUtil;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.Requestor;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPreferenceDetailsBean;
 import org.societies.api.schema.identity.DataIdentifier;
 import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
@@ -48,9 +49,9 @@ public class PPNPrivacyPreferenceTreeModel extends DefaultTreeModel implements I
 
 	
 	private IPrivacyPreference pref;
-	private final PPNPreferenceDetails details;
+	private final PPNPreferenceDetailsBean details;
 	
-	public PPNPrivacyPreferenceTreeModel(PPNPreferenceDetails details, IPrivacyPreference preference){
+	public PPNPrivacyPreferenceTreeModel(PPNPreferenceDetailsBean details, IPrivacyPreference preference){
 		super(preference);
 		this.details = details;
 
@@ -111,7 +112,7 @@ public class PPNPrivacyPreferenceTreeModel extends DefaultTreeModel implements I
 	}
 
 
-	public PPNPreferenceDetails getDetails() {
+	public PPNPreferenceDetailsBean getDetails() {
 		return details;
 	}
 
