@@ -26,6 +26,7 @@ package org.societies.activity;
 
 import org.apache.shindig.social.opensocial.model.ActivityEntry;
 import org.apache.shindig.social.opensocial.model.ActivityObject;
+import org.eclipse.jetty.util.log.Log;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -320,6 +321,7 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
 
     @Override
     synchronized public long importActivityEntries(List<?> activityEntries) {
+        LOG.info("in importactivities.. activityEntries.size: "+activityEntries.size());
         long ret = 0;
         if(activityEntries.size() == 0){
             LOG.error("list is empty, exiting");
@@ -335,6 +337,7 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
         ParsePosition pp = new ParsePosition(0);
         Session session = null;
         Transaction t = null;
+        int diffcounter = 0;
         try{
 
             session = getSessionFactory().openSession();
@@ -350,7 +353,15 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
                 newAct.setTarget(getContentIfNotNull(act.getTarget()));
                 newAct.setVerb(act.getVerb());
                 ret++;
-                session.save(newAct);
+                if(newAct.getTarget()==null && newAct.getActor()!=null)
+                    newAct.setTarget(newAct.getActor()); //if it has no target, it is for yourself..
+                if(newAct.getActor()!=null)
+                    session.save(newAct);
+                else
+                    LOG.error("actor is null in imported entry");
+
+                if(!newAct.getTarget().contentEquals(newAct.getActor()))
+                    diffcounter++;
             }
             t.commit();
         }catch(Exception e){
@@ -363,7 +374,7 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
             if(session!=null)
                 session.close();
         }
-
+        LOG.info("Imported "+ret+" activities, diffcounter: "+diffcounter);
         return ret;
     }
 
