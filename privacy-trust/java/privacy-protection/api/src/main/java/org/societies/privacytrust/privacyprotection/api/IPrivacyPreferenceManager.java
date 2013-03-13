@@ -32,20 +32,19 @@ import org.societies.api.context.model.CtxIdentifier;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.Requestor;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.IAgreement;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfPreferenceDetailsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPreferenceDetailsBean;
+import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPreferenceDetailsBean;
 import org.societies.api.privacytrust.privacy.model.PrivacyException;
 import org.societies.api.privacytrust.privacy.model.privacypolicy.Action;
 import org.societies.api.privacytrust.privacy.model.privacypolicy.RequestPolicy;
 import org.societies.api.privacytrust.privacy.model.privacypolicy.ResponseItem;
 import org.societies.api.privacytrust.privacy.model.privacypolicy.ResponsePolicy;
 import org.societies.api.schema.identity.DataIdentifier;
-import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyOutcome;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreference;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.IPrivacyPreferenceTreeModel;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.DObfOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.DObfPreferenceDetails;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IDSPreferenceDetails;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPreferenceDetails;
 
 
 /**
@@ -67,7 +66,32 @@ public interface IPrivacyPreferenceManager {
 	public ResponseItem checkPermission(Requestor requestor, DataIdentifier dataId, List<Action> actions)
 	  throws PrivacyException;
 
-/*	*//**
+
+	/**
+	 * Method to retrieve the evaluated outcome of identity selection preferences based on 
+	 * an agreement. 
+	 * 
+	 * @param agreement 	the privacy policy agreement document
+	 * @param identities	the list of identities that the IdentitySelection module deemed appropriate for this transaction
+	 * @return				the selected identity. is null if none of the identities passed to this method matched the preferences of the user.
+	 */
+	public IIdentity evaluateIDSPreferences(IAgreement agreement, List<IIdentity> identities);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*	*//**
 	 * Method to check the access control permission
 	 * @return	responseItem that indicates the resource, the Actions and Conditions and the Decision to permit or deny
 	 * 
@@ -80,23 +104,15 @@ public interface IPrivacyPreferenceManager {
 	  throws PrivacyException;
 */
 	
-	/**
-	 * Method to retrieve the evaluated outcome of identity selection preferences based on 
-	 * an agreement. 
-	 * 
-	 * @param agreement 	the privacy policy agreement document
-	 * @param identities	the list of identities that the IdentitySelection module deemed appropriate for this transaction
-	 * @return				the selected identity. is null if none of the identities passed to this method matched the preferences of the user.
-	 */
-	public IIdentity evaluateIDSPreferences(IAgreement agreement, List<IIdentity> identities);
 
-	/**
+
+/*	*//**
 	 * Method to generate a privacy policy as a response to a service or CIS RequestPolicy. 
 	 * 
 	 * @param 		request the privacy policy of the service or CIS with which the CSS is currently negotiating with. 
 	 * @return 		the privacy policy of the user as a response to the RequestPolicy. 
-	 */
-	public ResponsePolicy evaluatePPNP(RequestPolicy request);
+	 *//*
+	public ResponsePolicy evaluatePPNP(RequestPolicy request);*/
 
 	/**
 	 * Method to retrieve the outcomes of all PPN preferences that affect the given
@@ -106,198 +122,200 @@ public interface IPrivacyPreferenceManager {
 	 * @param contextType    the affected context type
 	 */
 	
-	/**
+/*	*//**
 	 *  Method to retrieve the outcomes of all PPN preferences that affect the given
 	 * context type
 	 * @param contextType	the data type in context
 	 * @return				a list of IPrivacyOutcome objects for each of the evaluated PPN preferences.
-	 */
-	public List<IPrivacyOutcome> evaluatePPNPreference(String contextType);
+	 *//*
+	public List<IPrivacyOutcome> evaluatePPNPreference(String contextType);*/
 
-	/**
+/*	*//**
 	 * Method to evaluate the identity selection preferences of the user with regard to the specified requestor (CSS, CIS or service)
 	 * @param requestor		the identity of the requestor (maybe RequestorService or RequestorCis)
 	 * @return				the Identity that should be used to interact with this requestor under the current context. Is null if 
 	 * 						the user selected to create new identity instead of using one of his existing identities. 
-	 */
-	public IIdentity evaluateIdSPreference(Requestor requestor);
+	 *//*
+	public IIdentity evaluateIdSPreference(Requestor requestor);*/
 
 	/**
 	 * Method to evaluate the identity selection preferences of the user with regard to the specified details
 	 * @param details		the details to which the preference refers to
 	 * @return				the identity that should be used to interact with the entity specified in the details
 	 */
-	public IIdentity evaluateIDSPreference(IDSPreferenceDetails details);
+	public IIdentity evaluateIDSPreference(IDSPreferenceDetailsBean details);
 	
 	
-	/**
+/*	*//**
 	 * Method to evaluate the data obfuscation preferences based on the user's identity, the requestor and the data type requested
 	 * @param requestor		the identity of the requestor (maybe RequestorService or RequestorCis)
 	 * @param owner			the identity of the user 
 	 * @param contextType	the data type in context
 	 * @return				the evaluated outcome of the data obfuscation preferences for this specific request. Indicates the level
 	 * 						of obfuscation that must be applied
-	 */
-	public DObfOutcome evaluateDObfPreference(Requestor requestor, String dataType);
+	 *//*
+	public DObfOutcome evaluateDObfPreference(Requestor requestor, String dataType);*/
 	
-	/**
+/*	*//**
 	 * Method to evaluate the data obfuscation preferences based on the context identifier. 
 	 * @param contextID		the identifier of the data held in context
 	 * @return				the evaluated outcome of the data obfuscation preferences for this specific request. Indicates the level
 	 * 						of obfuscation that must be applied
-	 */
-	public DObfOutcome evaluateDObfOutcome(CtxIdentifier contextID);
+	 *//*
+	public DObfOutcome evaluateDObfOutcome(CtxIdentifier contextID);*/
 	
 	/**
 	 * Method to retrieve the list of ISD preferences (not the actual preference objects, only the details for which a preference exists)
 	 * @return				the list of all IDS preference details. 
 	 */
-	public List<IDSPreferenceDetails> getIDSPreferenceDetails();
-	/**
+	public List<IDSPreferenceDetailsBean> getIDSPreferenceDetails();
+/*	*//**
 	 * Method to retrieve the list of IDSPreferences that affect the user's identity based on the requestor
 	 * @param affectedIIdentity    the affected user identity in the preference
 	 * @param requestor    the identity of the requestor (maybe RequestorService or RequestorCis)
 	 * @return				the list of preference models (each one containing the preference)
-	 */
+	 *//*
 	public List<IPrivacyPreferenceTreeModel> getIDSPreferences( Requestor requestor, IIdentity affectedIIdentity);
-
-	/**
+*/
+/*	*//**
 	 * Method to retrieve the list of IDSPreferences that affect the user's identity
 	 * 
 	 * @param affectedIIdentity    the affected user identity in the preference
 	 * @return				the list of preference models (each one containing the preference)
-	 */
-	public List<IPrivacyPreferenceTreeModel> getIDSPreferences(IIdentity affectedIIdentity);
+	 *//*
+	public List<IPrivacyPreferenceTreeModel> getIDSPreferences(IIdentity affectedIIdentity);*/
 
 	/**
 	 * Method to retrieve the IDS preferences based on the given parameters
 	 * @param details		the specific details to which the preference requested relates to
 	 * @return				the preference to which the details refer to
 	 */
-	public IPrivacyPreferenceTreeModel getIDSPreference(IDSPreferenceDetails details);
+	public IPrivacyPreferenceTreeModel getIDSPreference(IDSPreferenceDetailsBean details);
 	/**
 	 * Method to retrieve the list of PPN preferences (not the actual preference objects, only the details for which a preference exists)
 	 * @return				the list of all PPN preference details. 
 	 */
-	public List<PPNPreferenceDetails> getPPNPreferenceDetails();
+	public List<PPNPreferenceDetailsBean> getPPNPreferenceDetails();
 	
-	/**
+/*	*//**
 	 * Method to retrieve the PPNP preferences for a context type
 	 * 
 	 * @param contextType   the context data type
 	 * @return				the list of PPN models that affect this context type
-	 */
-	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(String contextType);
+	 *//*
+	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(String contextType);*/
 
-	/**
+/*	*//**
 	 * Method to retrieve the PPN preferences based on the given parameters
 	 * 
 	 * @param contextType   the context data type
 	 * @param ctxID    		the context identifier of the data type
 	 * @return				the list of PPNP models related to the supplied parameters 
-	 */
-	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(String contextType, CtxAttributeIdentifier ctxID);
+	 *//*
+	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(String contextType, CtxAttributeIdentifier ctxID);*/
 
-	/**
+/*	*//**
 	 * 
 	 * @param requestor		the identity of the requestor (maybe RequestorService or RequestorCis)
 	 * @param contextType	the context data type
 	 * @return				the list of PPNP models related to the supplied parameters
-	 */
-	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(Requestor requestor, String contextType);
+	 *//*
+	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(Requestor requestor, String contextType);*/
 
-	/**
+/*	*//**
 	 *  Method to retrieve the PPN preferences based on the given parameters
 	 * @param requestor		the identity of the requestor (maybe RequestorService or RequestorCis)
 	 * @param contextType	the data type in context
 	 * @param ctxID    		the context identifier of the data type
 	 * @return				the list of PPNP models related to the supplied parameters
-	 */
-	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(Requestor requestor, String contextType, CtxAttributeIdentifier ctxID);
+	 *//*
+	public List<IPrivacyPreferenceTreeModel> getPPNPreferences(Requestor requestor, String contextType, CtxAttributeIdentifier ctxID);*/
 
 	/**
 	 * Method to retrieve the PPN preferences based on the given parameters
 	 * @param details		the specific details to which the preference requested relates to
 	 * @return				the preference to which the details relate to
 	 */
-	public IPrivacyPreferenceTreeModel getPPNPreference(PPNPreferenceDetails details);
+	public IPrivacyPreferenceTreeModel getPPNPreference(PPNPreferenceDetailsBean details);
 	
 	/**
 	 * Method to retrieve the Data Obfuscation preferences based on the given parameters
 	 * @param details		the specific details to which the preference requested relates to
 	 * @return				the preference to which the details relate to 
 	 */
-	public IPrivacyPreferenceTreeModel getDObfPreference(DObfPreferenceDetails details);
+	public IPrivacyPreferenceTreeModel getDObfPreference(DObfPreferenceDetailsBean details);
 	
 	/**
 	 * Method to retrieve the details of all the DObf preferences
 	 * @return				a list of DObfPreferenceDetails objects
 	 */
-	public List<DObfPreferenceDetails> getDObfPreferences();
+	public List<DObfPreferenceDetailsBean> getDObfPreferences();
 	/**
 	 * Method to store an IDS preference related to the specific details (param)
 	 * @param details		the details to which the preference to be stored relates to
 	 * @param preference	the preference to be stored related to the provided details
 	 */
-	public void storeIDSPreference(IDSPreferenceDetails details, IPrivacyPreference preference);
+	public void storeIDSPreference(IDSPreferenceDetailsBean  details, IPrivacyPreference preference);
 	
 	/**
 	 * Method to store a PPN preference related to the specific details (param)
 	 * @param details		the details to which the preference to be stored relates to
 	 * @param preference	the preference to be stored related to the provided details
 	 */
-	public void storePPNPreference(PPNPreferenceDetails details, IPrivacyPreference preference);
+	public void storePPNPreference(PPNPreferenceDetailsBean details, IPrivacyPreference preference);
 	
 
 	/**
 	 * Method to delete the IDS preference referring to this details object.
 	 * @param details		the details to which the preference to be deleted refers to
 	 */
-	public void deleteIDSPreference(IDSPreferenceDetails details);
+	public void deleteIDSPreference(IDSPreferenceDetailsBean details);
 	
-	/**
+	
+	
+/*	*//**
 	 * Method to delete the IDS preference referring to this identity (only deletes the
 	 * generic IDS preference)
 	 * 
 	 * @param userId    the identity of the user to which the preference refers
-	 */
-	public void deleteIDSPreference(IIdentity userId);
+	 *//*
+	public void deleteIDSPreference(IIdentity userId);*/
 
-	/**
+/*	*//**
 	 * Method to delete the IDS preference referring to the provided parameters
 	 * 
 	 * @param requestor the identity of the requestor (maybe RequestorService or RequestorCis)
 	 * @param userIIdentity    the identity of the user to which the preference refers
-	 */
-	public void deleteIDSPreference(Requestor requestor, IIdentity userIIdentity);
+	 *//*
+	public void deleteIDSPreference(Requestor requestor, IIdentity userIIdentity);*/
 
 
-	/**
+/*	*//**
 	 * Method to delete an existing PPN preference model (generic to a context type)
 	 * 
 	 * @param contextType    the context type to which the preference refers
-	 */
-	public void deletePPNPreference(String contextType);
+	 *//*
+	public void deletePPNPreference(String contextType);*/
 	
-	/**
+/*	*//**
 	 * Method to delete an existing PPN preference model
 	 * @param contextType	the context data type
 	 * @param id			the identifier of the data held in context
-	 */
-	public void deletePPNPreference(String contextType, CtxAttributeIdentifier id);
+	 *//*
+	public void deletePPNPreference(String contextType, CtxAttributeIdentifier id);*/
 	
-	/**
+/*	*//**
 	 * Method to delete an existing PPN preference model
 	 * @param contextType    the context data type
 	 * @param affectedCtxID	the identifier of the data held in context
 	 * @param requestor    the identity of the requestor (maybe RequestorService or RequestorCis)
-	 */
-	public void deletePPNPreference(Requestor requestor, String contextType, CtxAttributeIdentifier affectedCtxID);
+	 *//*
+	public void deletePPNPreference(Requestor requestor, String contextType, CtxAttributeIdentifier affectedCtxID);*/
 
 	/**
 	 * Method to delete an existing PPN preference model
 	 * @param details		the details related to this preference
 	 */
-	public void deletePPNPreference(PPNPreferenceDetails details);
+	public void deletePPNPreference(PPNPreferenceDetailsBean details);
 
 }

@@ -38,21 +38,17 @@ import org.societies.api.identity.Requestor;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.RuleTarget;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.AccessControlOutcomeBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.AccessControlPreferenceBean;
-import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.AccessControlPreferenceDetailsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.AccessControlPreferenceTreeModelBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.ContextPreferenceConditionBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfOutcomeBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfPreferenceBean;
-import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfPreferenceDetailsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.DObfPrivacyPreferenceTreeModelBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSOutcomeBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPreferenceBean;
-import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPreferenceDetailsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.IDSPrivacyPreferenceTreeModelBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.OperatorConstantsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPOutcomeBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPreferenceBean;
-import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPreferenceDetailsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PPNPrivacyPreferenceTreeModelBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyConditionConstantsBean;
 import org.societies.api.internal.schema.privacytrust.privacyprotection.preferences.PrivacyOutcomeConstantsBean;
@@ -73,19 +69,15 @@ import org.societies.privacytrust.privacyprotection.api.model.privacypreference.
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.PrivacyPreference;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.TrustPreferenceCondition;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol.AccessControlOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol.AccessControlPreferenceDetails;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.accesscontrol.AccessControlPreferenceTreeModel;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.OperatorConstants;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyOutcomeConstants;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.constants.PrivacyPreferenceTypeConstants;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.DObfOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.DObfPreferenceDetails;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.dobf.DObfPreferenceTreeModel;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IDSPreferenceDetails;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IDSPrivacyPreferenceTreeModel;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ids.IdentitySelectionPreferenceOutcome;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPOutcome;
-import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPreferenceDetails;
 import org.societies.privacytrust.privacyprotection.api.model.privacypreference.ppn.PPNPrivacyPreferenceTreeModel;
 
 /**
@@ -331,28 +323,6 @@ public class PrivacyPreferenceUtils {
 		return OperatorConstants.LESS_THAN;
 	}
 
-
-	public static PPNPreferenceDetails toPPNPPreferenceDetails(PPNPreferenceDetailsBean bean, IIdentityManager idMgr) throws InvalidFormatException{
-		return new PPNPreferenceDetails(bean.getResource(), RequestorUtils.toRequestor(bean.getRequestor(), idMgr), bean.getAction());
-
-	}
-
-	public static IDSPreferenceDetails toIDSPreferenceDetails(IDSPreferenceDetailsBean bean, IIdentityManager idMgr) throws InvalidFormatException{
-		IDSPreferenceDetails details = new IDSPreferenceDetails(idMgr.fromJid(bean.getAffectedIdentity()));
-		details.setRequestor(RequestorUtils.toRequestor(bean.getRequestor(), idMgr));
-		return details;
-	}
-	public static DObfPreferenceDetails toDObfPreferenceDetails(DObfPreferenceDetailsBean bean, IIdentityManager idMgr) throws InvalidFormatException{
-		DObfPreferenceDetails details = new DObfPreferenceDetails(bean.getResource());
-		details.setRequestor(RequestorUtils.toRequestor(bean.getRequestor(), idMgr));
-		return details;
-	}
-
-	public static AccessControlPreferenceDetails toAccessControlPreferenceDetails(AccessControlPreferenceDetailsBean bean, IIdentityManager idMgr) throws InvalidFormatException{
-		AccessControlPreferenceDetails details = new AccessControlPreferenceDetails(bean.getResource());
-		details.setRequestor(RequestorUtils.toRequestor(bean.getRequestor(), idMgr));
-		return details;
-	}
 
 
 
@@ -613,36 +583,4 @@ public class PrivacyPreferenceUtils {
 	}
 
 
-
-
-
-
-
-	public static PPNPreferenceDetailsBean toPPNPreferenceDetailsBean(PPNPreferenceDetails details){
-		PPNPreferenceDetailsBean bean = new PPNPreferenceDetailsBean();
-		bean.setAction(details.getAction());
-		bean.setRequestor(RequestorUtils.toRequestorBean(details.getRequestor()));
-		bean.setResource(details.getResource());
-		return bean;
-	}
-
-	public  static IDSPreferenceDetailsBean toIDSPreferenceDetailsBean(IDSPreferenceDetails details){
-		IDSPreferenceDetailsBean bean = new IDSPreferenceDetailsBean();
-		bean.setAffectedIdentity(details.getAffectedDPI().getJid());
-		bean.setRequestor(RequestorUtils.toRequestorBean(details.getRequestor()));
-		return bean;
-	}
-	public static DObfPreferenceDetailsBean toDObfPreferenceDetailsBean(DObfPreferenceDetails details){
-		DObfPreferenceDetailsBean bean = new DObfPreferenceDetailsBean();
-		bean.setRequestor(RequestorUtils.toRequestorBean(details.getRequestor()));
-		bean.setResource(details.getResource());
-		return bean;
-	}
-
-	public static AccessControlPreferenceDetailsBean toAccessControlPreferenceDetailsBean(AccessControlPreferenceDetails details){
-		AccessControlPreferenceDetailsBean bean = new AccessControlPreferenceDetailsBean();
-		bean.setRequestor(RequestorUtils.toRequestorBean(details.getRequestor()));
-		bean.setResource(details.getResource());
-		return bean;
-	}
 }
