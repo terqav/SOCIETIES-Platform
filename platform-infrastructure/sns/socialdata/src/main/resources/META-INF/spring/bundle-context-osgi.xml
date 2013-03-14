@@ -10,7 +10,7 @@
        in this file. There is no requirement to keep these definitions
        in a separate file if you do not want to. The rationale for 
        keeping these definitions separate is to facilitate integration
-       testing of the bundle outside of an OSGi container
+       testing of the bundle outside of an OSGi container
     -->
      <osgi:service ref="iSocialData" 		interface="org.societies.api.internal.sns.ISocialData"/>
      <osgi:reference id="internalCtxBroker" interface="org.societies.api.internal.context.broker.ICtxBroker"/>
