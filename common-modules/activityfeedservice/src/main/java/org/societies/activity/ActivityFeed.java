@@ -218,16 +218,8 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
 
     @Override
     public void addActivity(IActivity activity, IActivityFeedCallback c) {
-        org.societies.api.schema.activityfeed.MarshaledActivityFeed result = new org.societies.api.schema.activityfeed.MarshaledActivityFeed();
-        AddActivityResponse r = new AddActivityResponse();
-
-        this.addActivity(activity);
-        r.setResult(true); //TODO. add a return on the activity feed method
-
-        result.setAddActivityResponse(r);
-        LOG.debug("going to call callback from addActivity with result " + r.isResult());
-        c.receiveResult(result);
-
+        ActivityFeedWorker worker = new ActivityFeedWorker(c,this);
+        worker.asyncAddActivity(activity);
     }
 
     synchronized public int cleanupFeed(String criteria) {
@@ -261,14 +253,7 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
 
     @Override
     public void cleanupFeed(String criteria, IActivityFeedCallback c) {
-        org.societies.api.schema.activityfeed.MarshaledActivityFeed result = new org.societies.api.schema.activityfeed.MarshaledActivityFeed();
-        CleanUpActivityFeedResponse r = new CleanUpActivityFeedResponse();
 
-        r.setResult(this.cleanupFeed(criteria));
-
-
-        result.setCleanUpActivityFeedResponse(r);
-        c.receiveResult(result);
 
 
     }

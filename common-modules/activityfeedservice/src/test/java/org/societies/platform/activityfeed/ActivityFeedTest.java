@@ -36,6 +36,7 @@ import org.societies.activity.ActivityFeed;
 import org.societies.activity.ActivityFeedManager;
 import org.societies.activity.model.Activity;
 import org.societies.api.activity.IActivity;
+import org.societies.api.activity.IActivityFeedCallback;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
 import org.societies.api.comm.xmpp.exceptions.XMPPError;
 import org.societies.api.comm.xmpp.interfaces.ICommManager;
@@ -44,6 +45,7 @@ import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.IIdentityManager;
 import org.societies.api.identity.InvalidFormatException;
 import org.societies.api.internal.sns.ISocialConnector;
+import org.societies.api.schema.activityfeed.MarshaledActivityFeed;
 import org.societies.platform.socialdata.SocialData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -158,7 +160,52 @@ AbstractTransactionalJUnit4SpringContextTests {
 		assert(results.size()>0);
 		assert(results.get(0).getActor().equals(actor));
 	}
+    @Test
+    @Rollback(false)
+    public void testAsyncAddCisActivity() {
+        LOG.info("@@@@@@@ IN TESTADDACTIVITY @@@@@@@");
+        actFeed.setId("1");
+        actFeed.startUp(sessionFactory);
+        final String actor="testUsertestAddCisActivity";
+        String verb="published";
+        final IActivity iact = new Activity();
+        iact.setActor(actor);
+        iact.setPublished(Long.toString(System.currentTimeMillis()));
+        iact.setVerb(verb);
+        iact.setObject("message");
+        iact.setTarget("testTarget");
+        actFeed.addActivity(iact, new IActivityFeedCallback() {
+            @Override
+            public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                assert activityFeedObject.getAddActivityResponse().isResult();
 
+                List<IActivity> results = null;
+                try {
+                    JSONObject searchQuery = new JSONObject();
+                    String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
+                    try {
+                        searchQuery.append("filterBy", "actor");
+                        searchQuery.append("filterOp", "equals");
+                        searchQuery.append("filterValue", actor);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    LOG.info("sending timeSeries: "+timeSeries+ " act published: "+iact.getPublished());
+                    results = actFeed.getActivities(searchQuery.toString(), timeSeries);
+                    LOG.info("testing filtering filter result: "+results.size());
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                assertNotNull(results);
+                assert(results.size()>0);
+                assert(results.get(0).getActor().equals(actor));
+            }
+        });
+
+    }
 	@Test
 	@Rollback(false)
 	public void testCleanupFeed() {
