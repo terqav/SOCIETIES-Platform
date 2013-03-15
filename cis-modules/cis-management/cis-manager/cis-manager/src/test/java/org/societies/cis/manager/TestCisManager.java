@@ -347,9 +347,9 @@ public class TestCisManager extends AbstractTransactionalJUnit4SpringContextTest
 		//acitivity feed mocking
 		
 		when(mockActivityFeedManager.deleteFeed(anyString(), anyString())).thenReturn(true);
-		when(mockActivityFeedManager.getOrCreateFeed(anyString(), eq(TEST_CISID_1), )).thenReturn(mockActivityFeed_1);
-		when(mockActivityFeedManager.getOrCreateFeed(anyString(), eq(TEST_CISID_2), )).thenReturn(mockActivityFeed_2);
-		when(mockActivityFeedManager.getOrCreateFeed(anyString(), eq(TEST_CISID_3), )).thenReturn(mockActivityFeed_3);
+		when(mockActivityFeedManager.getOrCreateFeed(anyString(), eq(TEST_CISID_1), eq(true))).thenReturn(mockActivityFeed_1);
+		when(mockActivityFeedManager.getOrCreateFeed(anyString(), eq(TEST_CISID_2), eq(true))).thenReturn(mockActivityFeed_2);
+		when(mockActivityFeedManager.getOrCreateFeed(anyString(), eq(TEST_CISID_3), eq(true))).thenReturn(mockActivityFeed_3);
 				
 
 		
