@@ -145,18 +145,18 @@ public class ActivityFeedManager implements IActivityFeedManager {
         Session session = getSessionFactory().openSession();
         List<ActivityFeed> tmpFeeds = null;
         try{
-        	tmpFeeds = session.createCriteria(ActivityFeed.class).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).list();
-        	feeds.addAll(tmpFeeds);
+            tmpFeeds = session.createCriteria(ActivityFeed.class).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).list();
+            feeds.addAll(tmpFeeds);
             for(ActivityFeed feed : tmpFeeds) {
                 if(feed.getPubsub()){
-                LOG.info("did not find feedid creating new..");
-                IIdentity identity = null;
-                try {
-                    identity = commManager.getIdManager().fromJid(feed.getOwner());
-                } catch (InvalidFormatException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                //not existing, making a new one..
+                    LOG.info("did not find feedid creating new..");
+                    IIdentity identity = null;
+                    try {
+                        identity = commManager.getIdManager().fromJid(feed.getOwner());
+                    } catch (InvalidFormatException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                    //not existing, making a new one..
 
 
                     feed.setPubSubcli(this.pubSubClient);
@@ -203,10 +203,10 @@ public class ActivityFeedManager implements IActivityFeedManager {
     public void setCommManager(ICommManager commManager) {
         this.commManager = commManager;
     }
-    
+
     @Override
     public IActivityFeed getRemoteActivityFeedHandler(ICommManager iCommMgr, IIdentity remoteCISid){
-    	return new RemoteActivityFeed(iCommMgr,remoteCISid);
+        return new RemoteActivityFeed(iCommMgr,remoteCISid);
     }
     private boolean persistNewFeed(ActivityFeed activityFeed){
         Session session = getSessionFactory().openSession();

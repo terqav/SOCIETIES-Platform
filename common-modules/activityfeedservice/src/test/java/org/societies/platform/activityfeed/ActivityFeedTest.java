@@ -46,6 +46,7 @@ import org.societies.api.identity.InvalidFormatException;
 import org.societies.api.internal.sns.ISocialConnector;
 import org.societies.api.schema.activity.MarshaledActivity;
 import org.societies.api.schema.activityfeed.MarshaledActivityFeed;
+import org.societies.api.schema.sns.socialdata.model.SocialNetwork;
 import org.societies.platform.socialdata.SocialData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -296,6 +297,7 @@ AbstractTransactionalJUnit4SpringContextTests {
 		mockedSocialConnector = mock(ISocialConnector.class);
 		stub(mockedSocialConnector.getConnectorName()).toReturn("facebook");
 		stub(mockedSocialConnector.getID()).toReturn("facebook_0001");
+        stub(mockedSocialConnector.getSocialNetwork()).toReturn(SocialNetwork.FACEBOOK);
 		try {
 			stub(mockedSocialConnector.getUserFriends()).toReturn(readFileAsString("mocks/friends.txt"));
 			stub(mockedSocialConnector.getUserActivities()).toReturn(readFileAsString("mocks/activities.txt"));
