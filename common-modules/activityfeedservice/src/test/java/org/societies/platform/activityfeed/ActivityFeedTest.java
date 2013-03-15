@@ -36,6 +36,7 @@ import org.societies.activity.ActivityFeed;
 import org.societies.activity.ActivityFeedManager;
 import org.societies.activity.model.Activity;
 import org.societies.api.activity.IActivity;
+import org.societies.api.activity.IActivityFeed;
 import org.societies.api.activity.IActivityFeedCallback;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
 import org.societies.api.comm.xmpp.exceptions.XMPPError;
@@ -45,6 +46,7 @@ import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.IIdentityManager;
 import org.societies.api.identity.InvalidFormatException;
 import org.societies.api.internal.sns.ISocialConnector;
+import org.societies.api.schema.activity.MarshaledActivity;
 import org.societies.api.schema.activityfeed.MarshaledActivityFeed;
 import org.societies.platform.socialdata.SocialData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -90,6 +94,7 @@ AbstractTransactionalJUnit4SpringContextTests {
     private static final String FEED_JID="sintef";
     private static PubsubClient mockPubsubClient = mock(PubsubClient.class);
     private static List<String> mockDicoItems = new ArrayList<String>();
+    private final static int callBackTimeout=1000;
 
 
     static {
@@ -124,7 +129,7 @@ AbstractTransactionalJUnit4SpringContextTests {
 	@Rollback(false)
 	public void testAddCisActivity() {
 		LOG.info("@@@@@@@ IN TESTADDACTIVITY @@@@@@@");
-        actFeed.setId("1");
+        actFeed.setId("testAddCisActivity");
 		actFeed.startUp(sessionFactory);
 		String actor="testUsertestAddCisActivity";
 		String verb="published";
@@ -134,9 +139,23 @@ AbstractTransactionalJUnit4SpringContextTests {
 		iact.setVerb(verb);
 		iact.setObject("message");
 		iact.setTarget("testTarget");
-		actFeed.addActivity(iact);
-
-		List<IActivity> results = null;
+        final CountDownLatch latch = new CountDownLatch(1);
+        final Boolean resultArr[] = {false};
+		actFeed.addActivity(iact, new IActivityFeedCallback() {
+            @Override
+            public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                latch.countDown();
+                resultArr[0] = activityFeedObject.getAddActivityResponse().isResult();
+            }
+        });
+        try {
+            latch.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assert resultArr[0];
+        final List<MarshaledActivity> results = new ArrayList<MarshaledActivity>();
+        final CountDownLatch latch2 = new CountDownLatch(1);
 		try {
 			JSONObject searchQuery = new JSONObject();
 			String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
@@ -148,15 +167,25 @@ AbstractTransactionalJUnit4SpringContextTests {
 				e.printStackTrace();
 			}
 			LOG.info("sending timeSeries: "+timeSeries+ " act published: "+iact.getPublished());
-			results = actFeed.getActivities(searchQuery.toString(), timeSeries);
+			actFeed.getActivities(searchQuery.toString(), timeSeries, new IActivityFeedCallback() {
+                @Override
+                public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                    results.addAll(activityFeedObject.getGetActivitiesResponse().getMarshaledActivity());
+                    latch2.countDown();
+                }
+            });
 			LOG.info("testing filtering filter result: "+results.size());
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		assertNotNull(results);
+        try {
+            latch2.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(results);
 		assert(results.size()>0);
 		assert(results.get(0).getActor().equals(actor));
 	}
@@ -164,7 +193,7 @@ AbstractTransactionalJUnit4SpringContextTests {
     @Rollback(false)
     public void testAsyncAddCisActivity() {
         LOG.info("@@@@@@@ IN TESTADDACTIVITY @@@@@@@");
-        actFeed.setId("1");
+        actFeed.setId("testAsyncAddCisActivity");
         actFeed.startUp(sessionFactory);
         final String actor="testUsertestAddCisActivity";
         String verb="published";
@@ -174,67 +203,59 @@ AbstractTransactionalJUnit4SpringContextTests {
         iact.setVerb(verb);
         iact.setObject("message");
         iact.setTarget("testTarget");
+        final CountDownLatch latch = new CountDownLatch(1); final Boolean resultArr[] = {false};
         actFeed.addActivity(iact, new IActivityFeedCallback() {
             @Override
             public void receiveResult(MarshaledActivityFeed activityFeedObject) {
-                assert activityFeedObject.getAddActivityResponse().isResult();
-
-                List<IActivity> results = null;
-                try {
-                    JSONObject searchQuery = new JSONObject();
-                    String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
-                    try {
-                        searchQuery.append("filterBy", "actor");
-                        searchQuery.append("filterOp", "equals");
-                        searchQuery.append("filterValue", actor);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    LOG.info("sending timeSeries: "+timeSeries+ " act published: "+iact.getPublished());
-                    results = actFeed.getActivities(searchQuery.toString(), timeSeries);
-                    LOG.info("testing filtering filter result: "+results.size());
-
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                assertNotNull(results);
-                assert(results.size()>0);
-                assert(results.get(0).getActor().equals(actor));
+                resultArr[0] = activityFeedObject.getAddActivityResponse().isResult();
+                latch.countDown();
             }
         });
+        try {
+            latch.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        final List<MarshaledActivity> results = new ArrayList<MarshaledActivity>();
+        final CountDownLatch latch2 = new CountDownLatch(1);
+        try {
+            JSONObject searchQuery = new JSONObject();
+            String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
+            try {
+                searchQuery.append("filterBy", "actor");
+                searchQuery.append("filterOp", "equals");
+                searchQuery.append("filterValue", actor);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            LOG.info("sending timeSeries: "+timeSeries+ " act published: "+iact.getPublished());
+            actFeed.getActivities(searchQuery.toString(), timeSeries, new IActivityFeedCallback() {
+                @Override
+                public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                    results.addAll(activityFeedObject.getGetActivitiesResponse().getMarshaledActivity());
+                    latch2.countDown();
+                }
+            });
+            LOG.info("testing filtering filter result: "+results.size());
+            latch2.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        assertNotNull(results);
+        assert(results.size()>0);
+        assert(results.get(0).getActor().equals(actor));
 
     }
-	@Test
-	@Rollback(false)
-	public void testCleanupFeed() {
-		LOG.info("@@@@@@@ IN TESTCLEANUPFEED @@@@@@@");
-        actFeed.setId("2");
-		actFeed.startUp(sessionFactory);
-		JSONObject searchQuery = new JSONObject();
-		String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
-		try {
-			searchQuery.append("filterBy", "actor");
-			searchQuery.append("filterOp", "present");
-			searchQuery.append("filterValue", "");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		try{
-			actFeed.cleanupFeed(searchQuery.toString());
-		}catch(Exception e){
 
-		}
-
-	}
 
 	//@Ignore // this test runs when running on junit in eclipse but fails when testing with maven
 	@Test
 	@Rollback(false)
 	public void testFilter(){
 		LOG.info("@@@@@@@ IN TESTFILTER @@@@@@@");
-        actFeed.setId("2");
+        actFeed.setId("testFilter");
 		actFeed.startUp(sessionFactory);
 		String actor="testFilterUser";
 		Activity act1 = new Activity(); act1.setActor(actor); act1.setPublished(Long.toString(System.currentTimeMillis()-100));
@@ -249,33 +270,29 @@ AbstractTransactionalJUnit4SpringContextTests {
 			e.printStackTrace();
 		}
 		LOG.info("sending timeSeries: "+timeSeries+ " act published: "+act1.getPublished());
-		List<IActivity> results = actFeed.getActivities(searchQuery.toString(), timeSeries);
-		LOG.info("testing filtering filter result: "+results.size());
+        final List<MarshaledActivity> results = new ArrayList<MarshaledActivity>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        actFeed.getActivities(searchQuery.toString(), timeSeries,new IActivityFeedCallback() {
+            @Override
+            public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                results.addAll(activityFeedObject.getGetActivitiesResponse().getMarshaledActivity());
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        LOG.info("testing filtering filter result: "+results.size());
 		assert(results.size() > 0);
 	}
 
-//	@Test
-//	@Rollback(true)
-//	public void testBootStrap(){
-//		LOG.info("@@@@@@@ IN TESTBOOTSTRAP @@@@@@@");
-//		SessionFactory ses = ActivityFeed.getStaticSessionFactory();
-//		Session s = ses.openSession();
-//		Transaction t = s.beginTransaction();
-//		t.begin();
-//		for(int i=0;i<10;i++){
-//			ActivityFeed feed = new ActivityFeed(Integer.toString(i));
-//
-//			s.save(feed);
-//		}
-//		t.commit();
-//		ActivityFeed queryFeed = ActivityFeed.startUp("0");
-//		assert(queryFeed != null);
-//	}
 	@Test
 	@Rollback(false)
 	public void testSNImporter(){
 		LOG.info("@@@@@@@ IN TESTSNIMPORTER @@@@@@@");
-        actFeed.setId("4");
+        actFeed.setId("testSNImporter");
 		actFeed.startUp(sessionFactory);
 		LOG.info("actFeedcontent: "+ actFeed.getActivities("0 " + Long.toString(System.currentTimeMillis())).size());
 		ISocialConnector mockedSocialConnector; 
@@ -315,7 +332,7 @@ AbstractTransactionalJUnit4SpringContextTests {
 		LOG.info("@@@@@@@ IN TESTREBOOT @@@@@@@");
 		String actor="testRebootActor";
 		String verb="published";
-        actFeed.setId("5");
+        actFeed.setId("testReboot");
 		actFeed.startUp(sessionFactory);
 		IActivity iact = new Activity();
 		iact.setActor(actor);
@@ -325,13 +342,9 @@ AbstractTransactionalJUnit4SpringContextTests {
 		iact.setTarget("testTarget");
 
 		actFeed.addActivity(iact);
-//				Session session = ActivityFeed.getStaticSessionFactory().openSession();//getSessionFactory().openSession();
-//				Transaction t = session.beginTransaction();
-//				session.update(actFeed);
-//				t.commit();
-		//actFeed.startUp(session,"1");
 
-		List<IActivity> results = null;
+        final List<MarshaledActivity> results = new ArrayList<MarshaledActivity>();
+        final CountDownLatch latch = new CountDownLatch(1);
 		try {
 			JSONObject searchQuery = new JSONObject();
 			String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
@@ -343,17 +356,83 @@ AbstractTransactionalJUnit4SpringContextTests {
 				e.printStackTrace();
 			}
 			LOG.info("sending timeSeries: "+timeSeries+ " act published: "+iact.getPublished());
-			results = actFeed.getActivities(searchQuery.toString(), timeSeries);
+			actFeed.getActivities(searchQuery.toString(), timeSeries, new IActivityFeedCallback() {
+                @Override
+                public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                    results.addAll(activityFeedObject.getGetActivitiesResponse().getMarshaledActivity());
+                    latch.countDown();
+                }
+            });
 			LOG.info("testing filtering filter result: "+results.size());
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//assert(results!=null);
+        try {
+            latch.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 		assert(results.size()>0);
 		assert(results.get(0).getActor().equals(actor));
 	}
+
+    public void testCleanup(){
+        IActivity act = new Activity();
+        actFeed.setId("testCleanup");
+        final String actor = "testActor";
+        act.setActor(actor);
+        act.setObject("testObject");
+        act.setTarget("testTarget");
+        act.setVerb("testVerb");
+        final Boolean[] correctArr = {false};
+        final CountDownLatch latch = new CountDownLatch(1);
+        actFeed.addActivity(act, new IActivityFeedCallback() {
+            @Override
+            public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                 latch.countDown();
+            }
+        });
+
+        try {
+            latch.await(callBackTimeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        final CountDownLatch latch2 = new CountDownLatch(1);
+        try {
+            JSONObject searchQuery = new JSONObject();
+            String timeSeries = "0 "+Long.toString(System.currentTimeMillis());
+            try {
+                searchQuery.append("filterBy", "actor");
+                searchQuery.append("filterOp", "equals");
+                searchQuery.append("filterValue", actor);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            actFeed.cleanupFeed(searchQuery.toString(), new IActivityFeedCallback() {
+                @Override
+                public void receiveResult(MarshaledActivityFeed activityFeedObject) {
+                    latch2.countDown();
+                    correctArr[0] = activityFeedObject.getCleanUpActivityFeedResponse().getResult() > 0 ;
+                }
+            });
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            latch2.await(callBackTimeout,TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assert correctArr[0];
+
+    }
+
 	private static String readFileAsString(String filePath)
 			throws java.io.IOException{
 		StringBuffer fileData = new StringBuffer(1000);
