@@ -25,7 +25,6 @@
 package org.societies.platform.activityfeed;
 
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +35,6 @@ import org.societies.activity.ActivityFeed;
 import org.societies.activity.ActivityFeedManager;
 import org.societies.activity.model.Activity;
 import org.societies.api.activity.IActivity;
-import org.societies.api.activity.IActivityFeed;
 import org.societies.api.activity.IActivityFeedCallback;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
 import org.societies.api.comm.xmpp.exceptions.XMPPError;
@@ -50,7 +48,6 @@ import org.societies.api.schema.activity.MarshaledActivity;
 import org.societies.api.schema.activityfeed.MarshaledActivityFeed;
 import org.societies.platform.socialdata.SocialData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -117,7 +114,7 @@ AbstractTransactionalJUnit4SpringContextTests {
     @Before
 	public void setupBefore() throws Exception {
         activityFeedManager.setSessionFactory(this.sessionFactory);
-        actFeed = (ActivityFeed) activityFeedManager.getOrCreateFeed(FEED_JID,FEED_ID);
+        actFeed = (ActivityFeed) activityFeedManager.getOrCreateFeed(FEED_JID,FEED_ID, true);
 	}
 	@After
 	public void tearDownAfter() throws Exception {

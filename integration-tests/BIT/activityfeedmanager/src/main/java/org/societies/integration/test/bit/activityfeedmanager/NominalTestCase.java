@@ -148,9 +148,9 @@ public class NominalTestCase {
     public void testActivityFeedManager() {
         IActivityFeed activityFeed1 = null; IActivityFeed activityFeed2 = null;
         LOG.info("[#"+testCaseNumber+"] creating activityFeed1");
-        activityFeed1 = TestCase10961.activityFeedManager.getOrCreateFeed("admin.societies.local", "onlyFeedId1");
+        activityFeed1 = TestCase10961.activityFeedManager.getOrCreateFeed("admin.societies.local", "onlyFeedId1", );
         LOG.info("[#"+testCaseNumber+"] creating activityFeed2");
-        activityFeed2 = TestCase10961.activityFeedManager.getOrCreateFeed("admin.societies.local", "onlyFeedId2");
+        activityFeed2 = TestCase10961.activityFeedManager.getOrCreateFeed("admin.societies.local", "onlyFeedId2", );
 
         LOG.info("[#"+testCaseNumber+"] inserting 1 activity into cis1");
         //inserting 1 activity into cis1

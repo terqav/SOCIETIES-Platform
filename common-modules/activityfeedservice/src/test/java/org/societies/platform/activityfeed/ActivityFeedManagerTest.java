@@ -117,35 +117,35 @@ public class  ActivityFeedManagerTest {
 
     @Test
     public void testGetNewActivityFeed(){
-        IActivityFeed feed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testGetNewActivityFeed");
+        IActivityFeed feed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testGetNewActivityFeed", true );
         assert (((ActivityFeed)feed).getOwner().contentEquals(this.mockJid));
     }
     @Test
     public void testGetOldActivityFeed(){
-        IActivityFeed oldFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testGetOldActivityFeed");
-        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testGetOldActivityFeed");
+        IActivityFeed oldFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testGetOldActivityFeed", true );
+        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testGetOldActivityFeed", true );
         String oldOwner = ((ActivityFeed)oldFeed).getOwner();
         String checkOwner = ((ActivityFeed)checkFeed).getOwner();
         assert (oldOwner.contentEquals(checkOwner));
     }
     @Test
     public void testGetNotMyOwnActivityFeed(){
-        activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid+"something",FEED_ID+"testGetNotMyOwnActivityFeed");
-        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid, FEED_ID+"testGetNotMyOwnActivityFeed");
+        activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid+"something",FEED_ID+"testGetNotMyOwnActivityFeed", true );
+        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid, FEED_ID+"testGetNotMyOwnActivityFeed", true );
         assert (checkFeed == null);
     }
     @Test
     public void testDeleteOwnActivityFeed(){
-        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testDeleteOwnActivityFeed");
+        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testDeleteOwnActivityFeed", true );
         int checkHash = checkFeed.hashCode();
         boolean ret = activityFeedManagerUnderTest.deleteFeed(this.mockJid,FEED_ID+"testDeleteOwnActivityFeed");
         assert (ret);
-        checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testDeleteOwnActivityFeed"); //this should create a NEW object containing the same data..
+        checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testDeleteOwnActivityFeed", true ); //this should create a NEW object containing the same data..
         assert (checkHash!=checkFeed.hashCode());
     }
     @Test
     public void testDeleteNotMyOwnActivityFeed(){
-        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testDeleteNotMyOwnActivityFeed");
+        IActivityFeed checkFeed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testDeleteNotMyOwnActivityFeed", true );
         int checkHash = checkFeed.hashCode();
         boolean ret = activityFeedManagerUnderTest.deleteFeed(this.mockJid+"something",FEED_ID+"testDeleteNotMyOwnActivityFeed");
         assert (!ret);
@@ -157,7 +157,7 @@ public class  ActivityFeedManagerTest {
     }
     @Test
     public void testReboot(){
-        IActivityFeed feed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testReboot");
+        IActivityFeed feed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testReboot", true);
         IActivity act = new Activity();
         final String actor = "testActor";
         act.setActor(actor);
@@ -183,7 +183,7 @@ public class  ActivityFeedManagerTest {
         activityFeedManagerUnderTest = null;
         beforeTest();
         activityFeedManagerUnderTest.init();
-        feed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testReboot");
+        feed = activityFeedManagerUnderTest.getOrCreateFeed(this.mockJid,FEED_ID+"testReboot", true );
         feed.getActivities("0 "+Long.toString(System.currentTimeMillis()+1),new IActivityFeedCallback() {
             @Override
             public void receiveResult(MarshaledActivityFeed activityFeedObject) {

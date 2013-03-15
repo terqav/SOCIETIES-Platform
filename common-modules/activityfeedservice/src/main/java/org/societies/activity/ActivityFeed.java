@@ -73,8 +73,11 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
     private PubsubClient pubSubcli;
     @Transient
     private IIdentity ownerCSS;
-    public ActivityFeed(String id, String owner){
-        this.owner = owner; this.setId(id);
+
+    private Boolean pubsub;
+
+    public ActivityFeed(String id, String owner, Boolean pubsub){
+        this.owner = owner; this.setId(id); this.setPubsub(pubsub);
         initClass();
     }
     public ActivityFeed(){
@@ -93,7 +96,7 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
     // version with PubSub
     synchronized public void startUp(SessionFactory sessionFactory){
         this.setSessionFactory(sessionFactory);
-        this.setPubSubcli(pubSubcli);
+
     }
     public void connectPubSub(IIdentity ownerCSS){ //ASSUME PUBSUB NODE PERSISTING (CONFIGURATION), CHECK IF IT EXISTS
         this.ownerCSS = ownerCSS;
@@ -587,5 +590,13 @@ public class ActivityFeed implements IActivityFeed, ILocalActivityFeed {
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    public Boolean getPubsub() {
+        return pubsub;
+    }
+
+    public void setPubsub(Boolean pubsub) {
+        this.pubsub = pubsub;
     }
 }
